@@ -1,9 +1,23 @@
 #!/bin/bash
 
 # TikTok Workshop App Deployment Script - COMPLETE DEPLOYMENT
-set -e
+set echo "🌐 Setting up Nginx configuration..."
+# Remove any conflicting configs that might redirect to wdp.joycalls.com
+find /etc/nginx -name "*.conf" -exec grep -l "wdp.joycalls.com" {} + 2>/dev/null | while read file; do
+    echo "  🗑️  Removing conflicting config: $file"
+    mv "$file" "$file.disabled.$(date +%Y%m%d_%H%M%S)"
+done
 
-echo "🚀 Deploying TikTok Learning Sharing Workshop - COMPLETE SYSTEM"
+# Deploy our nginx configuration
+cp frontend/nginx.conf /etc/nginx/sites-available/default
+nginx -t
+if [ $? -eq 0 ]; then
+    systemctl reload nginx
+    echo "  ✅ Nginx configuration updated"
+else
+    echo "  ❌ Nginx configuration error!"
+    exit 1
+ficho "🚀 Deploying TikTok Learning Sharing Workshop - COMPLETE SYSTEM"
 echo "================================================================="
 
 # Colors
