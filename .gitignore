@@ -15,9 +15,15 @@ build/
 .env.test.local
 .env.production.local
 .env.production
+.env.deployment
 
 # Frontend environment files
 frontend/.env.production
+
+# Security files
+*.key
+*.pem
+*.p12
 
 # Database
 *.sqlite
