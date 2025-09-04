@@ -29,25 +29,57 @@ Email: admin@logistics.com
 Password: TikTok_Admin_2025_Server_148!
 ```
 
-## 🚀 One-Command Deployment
+## � **Working Directory Location**
+
+Your TikTok Workshop files should be located at: **`/opt/tik-workshop`**
+
+**Quick Navigation Commands:**
+```bash
+# Go to workshop directory
+cd /opt/tik-workshop
+
+# Update code from GitHub
+git pull origin main
+
+# List all files
+ls -la
+
+# View deployment scripts
+ls -la *.sh
+```
+
+**If you can't find your workshop directory:**
+```bash
+# Run the directory finder
+curl -s https://raw.githubusercontent.com/sahidur/logistics-request-system/main/find-workshop.sh | bash
+```
+
+## �🚀 One-Command Deployment
 
 ### Step 1: Connect to Your Server
 ```bash
 ssh root@139.59.122.235
 ```
 
-### Step 2: Clone and Deploy (ONE COMMAND!)
+### Step 2: Find or Create Workshop Directory
 ```bash
-git clone https://github.com/sahidur/logistics-request-system.git /tmp/tik-workshop && \
-cd /tmp/tik-workshop && \
-chmod +x *.sh && \
-./deploy-system.sh && \
-./deploy-app.sh
+# Option A: If you already cloned before, find the directory
+curl -s https://raw.githubusercontent.com/sahidur/logistics-request-system/main/find-workshop.sh | bash
+
+# Option B: Fresh installation to permanent location
+git clone https://github.com/sahidur/logistics-request-system.git /opt/tik-workshop
+cd /opt/tik-workshop
 ```
 
-### Step 3: Verify Deployment
+### Step 3: Deploy Application
 ```bash
-./verify-deployment.sh
+chmod +x *.sh
+sudo ./deploy-app.sh
+```
+
+### Step 4: Verify Deployment
+```bash
+sudo ./verify-deployment.sh
 ```
 
 ## 📊 Expected Output
@@ -117,8 +149,9 @@ sudo nginx -t && sudo systemctl restart nginx
 2. **Test Firewall**:
    ```bash
    # Test if ports are accessible
-   curl http://139.59.122.235:4000/health
-   curl http://139.59.122.235
+   cd /opt/tik-workshop
+   curl http://tiktok.somadhanhobe.com/api/health
+   curl https://tiktok.somadhanhobe.com
    ```
 
 3. **Database Security**:
