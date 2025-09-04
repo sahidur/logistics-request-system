@@ -97,17 +97,32 @@ echo "================================================"
 echo -e "${YELLOW}⚙️ Setting up backend...${NC}"
 cd $APP_DIR/backend
 
-# Create production environment file
-echo -e "${YELLOW}⚠️  Please enter your database URL:${NC}"
-echo "Example: postgresql://username:password@host:port/database?sslmode=require"
-read -r database_url
-
-cat > .env << EOF
+# Copy production environment file from repository root
+echo -e "${YELLOW}📋 Configuring production environment...${NC}"
+if [ -f "../.env.production" ]; then
+    cp ../.env.production .env
+    echo -e "${GREEN}✅ Production environment copied from repository${NC}"
+    
+    # Show database configuration status
+    DB_URL=$(grep "DATABASE_URL=" .env | cut -d'=' -f2- | tr -d '"')
+    if [ -n "$DB_URL" ]; then
+        echo -e "${GREEN}✅ Database URL configured${NC}"
+    else
+        echo -e "${RED}❌ Database URL not found in .env.production${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠️  .env.production not found, creating basic configuration...${NC}"
+    echo -e "${YELLOW}📝 Please enter your database URL:${NC}"
+    echo "Example: postgresql://username:password@host:port/database?sslmode=require"
+    read -r database_url
+    
+    cat > .env << EOF
 NODE_ENV=production
 PORT=4000
 JWT_SECRET=TikTok_Workshop_2025_Production_JWT_Secret_146_190_106_123_SecureKey_xyz789
 DATABASE_URL=$database_url
 EOF
+fi
 
 # Install backend dependencies
 echo -e "${YELLOW}📦 Installing backend dependencies...${NC}"
@@ -121,23 +136,62 @@ check_success "Prisma client generation"
 
 # Test database connection
 echo -e "${YELLOW}🧪 Testing database connection...${NC}"
-if [ -n "$database_url" ]; then
-    node -e "
+
+# Load environment variables for subsequent commands
+if [ -f ".env" ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
+
+node -e "
 const { PrismaClient } = require('./generated/prisma');
 const prisma = new PrismaClient();
 prisma.user.findMany().then(users => {
-  console.log('✅ Database connected successfully');
+  console.log('✅ Database connected successfully. Users found:', users.length);
   process.exit(0);
 }).catch(err => {
   console.error('❌ Database connection error:', err.message);
-  console.log('Please check your database URL and try again');
+  console.log('Please check your DATABASE_URL in .env file');
   process.exit(1);
 });
 "
-    check_success "Database connection test"
-else
-    echo -e "${YELLOW}⚠️  Skipping database test - no URL provided${NC}"
-fi
+check_success "Database connection test"
+
+# Seed database with admin user if needed
+echo -e "${YELLOW}👤 Setting up admin user...${NC}"
+node -e "
+const { PrismaClient } = require('./generated/prisma');
+const bcrypt = require('bcrypt');
+const prisma = new PrismaClient();
+
+async function setupAdmin() {
+  try {
+    const existingAdmin = await prisma.user.findUnique({
+      where: { email: 'admin@logistics.com' }
+    });
+    
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash('admin123', 10);
+      await prisma.user.create({
+        data: {
+          name: 'Admin',
+          email: 'admin@logistics.com',
+          password: hashedPassword,
+          teamName: 'Administration'
+        }
+      });
+      console.log('✅ Admin user created successfully');
+    } else {
+      console.log('✅ Admin user already exists');
+    }
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Error setting up admin:', error.message);
+    process.exit(1);
+  }
+}
+
+setupAdmin();
+" || echo -e "${YELLOW}⚠️  Admin setup failed, but continuing...${NC}"
 
 echo -e "${BLUE}📋 Step 5: Configure Frontend${NC}"
 echo "================================================"
