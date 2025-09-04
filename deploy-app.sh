@@ -257,6 +257,7 @@ if [[ $setup_ssl =~ ^[Yy]$ ]]; then
     apt install -y certbot python3-certbot-nginx
     certbot --nginx -d $DOMAIN -d www.$DOMAIN
 fi
+fi
 
 # Set up firewall
 echo -e "${YELLOW}🔥 Configuring firewall...${NC}"
