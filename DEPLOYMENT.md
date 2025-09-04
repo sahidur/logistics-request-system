@@ -1,53 +1,65 @@
-# 🚀 Production Deployment Quick Guide
-# Server IP: 134.209.110.148
+# 🚀 TikTok Workshop Logistics - Complete Production Deployment Guide
 
-## 📋 Pre-deployment Checklist
+This guide provides **one-command deployment** for the complete TikTok Learning Sharing Workshop logistics system on server **134.209.110.148**.
 
-### 1. **Server Requirements**
-- Ubuntu 20.04+ Server (IP: 134.209.110.148)
-- Node.js 18+ installed
-- Nginx installed
-- Firewall configured for ports 80 and 4000
+## ⚠️ **Security Notice**
+Ensure your `.env.production` files contain your actual database credentials before deployment. The GitHub repository contains placeholder values for security.
 
-### 2. **Security Updates Required**
+## 📋 What Gets Deployed
 
-The production environment is pre-configured for your server. Default values:
+- ✅ **Frontend**: React SPA with glassmorphism UI
+- ✅ **Backend**: Node.js API with PostgreSQL
+- ✅ **Admin Panel**: Separate admin dashboard at `/admin`
+- ✅ **Database**: DigitalOcean PostgreSQL (pre-configured)
+- ✅ **Web Server**: Nginx with proper routing
+- ✅ **Process Manager**: PM2 for backend clustering
+- ✅ **File Uploads**: Complete upload functionality
+- ✅ **Security**: Production headers and configurations
 
-```bash
-# Already configured in .env.production
-JWT_SECRET="TikTok_Workshop_2025_Production_JWT_Secret_134_209_110_148_SecureKey_xyz789"
-ADMIN_PASSWORD="TikTok_Admin_2025_Server_148!"
-FRONTEND_URL=http://134.209.110.148
+## 🌐 Production URLs
+
+- **Main Website**: `http://134.209.110.148`
+- **Admin Dashboard**: `http://134.209.110.148/admin`  
+- **API Health Check**: `http://134.209.110.148/health`
+
+## � Admin Credentials
+
+```
+Email: admin@logistics.com
+Password: TikTok_Admin_2025_Server_148!
 ```
 
-### 3. **Frontend Environment**
+## 🚀 One-Command Deployment
 
-Already configured in `frontend/.env.production`:
-
+### Step 1: Connect to Your Server
 ```bash
-VITE_API_URL=http://134.209.110.148:4000
-```
-
-## 🚀 Quick Deployment Commands
-
-### Option 1: Automated Deployment (Recommended)
-```bash
-# SSH to your server
 ssh root@134.209.110.148
-
-# Copy your files to server, then run:
-sudo ./deploy-system.sh
-sudo ./deploy-app.sh
 ```
 
-### Option 2: Manual Deployment
+### Step 2: Clone and Deploy (ONE COMMAND!)
 ```bash
-# SSH to your server
-ssh root@134.209.110.148
+git clone https://github.com/sahidur/logistics-request-system.git /tmp/tik-workshop && \
+cd /tmp/tik-workshop && \
+chmod +x *.sh && \
+./deploy-system.sh && \
+./deploy-app.sh
+```
 
-# 1. Copy production environment files
-cp .env.production backend/.env
-cp frontend/.env.production frontend/.env
+### Step 3: Verify Deployment
+```bash
+./verify-deployment.sh
+```
+
+## 📊 Expected Output
+
+After successful deployment, you'll see:
+```
+🎉 DEPLOYMENT COMPLETE!
+===============================================
+🌐 Website: http://134.209.110.148
+👤 Admin Panel: http://134.209.110.148/admin
+🔧 API Health: http://134.209.110.148/health
+```
 
 # 2. Install backend dependencies
 cd backend
