@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-DOMAIN="139.59.122.235"
+DOMAIN="tiktok.somadhanhobe.com"
 API_PORT="4000"
 
 echo -e "${YELLOW}🌐 Testing deployment...${NC}"

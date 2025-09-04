@@ -42,8 +42,10 @@ const corsOptions = {
     origin: [
         'http://localhost:5173', // Development
         'http://localhost:3000', // Alternative dev port
-        'http://139.59.122.235',    // Production server
-        'http://139.59.122.235:80'  // Production server with port
+        'https://tiktok.somadhanhobe.com',    // Production domain HTTPS
+        'http://tiktok.somadhanhobe.com',     // Production domain HTTP (redirect to HTTPS)
+        'http://139.59.122.235',    // Server IP fallback
+        'https://139.59.122.235'    // Server IP HTTPS fallback
     ],
     credentials: true
 };

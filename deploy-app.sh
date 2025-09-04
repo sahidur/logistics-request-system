@@ -30,7 +30,7 @@ NC='\033[0m'
 # Configuration
 APP_DIR="/var/www/tik-workshop"
 APP_USER="tikworkshop"
-DOMAIN="139.59.122.235"
+DOMAIN="tiktok.somadhanhobe.com"
 NGINX_ROOT="/var/www/html"
 
 # Create application user if doesn't exist
@@ -251,12 +251,12 @@ else
 fi
 
 # Set up SSL with Let's Encrypt (optional)
-echo -e "${YELLOW}🔒 Do you want to set up SSL with Let's Encrypt? (y/N):${NC}"
-read -r setup_ssl
-if [[ $setup_ssl =~ ^[Yy]$ ]]; then
-    apt install -y certbot python3-certbot-nginx
-    certbot --nginx -d $DOMAIN -d www.$DOMAIN
-fi
+echo -e "${YELLOW}🔒 Setting up SSL with Let's Encrypt automatically...${NC}"
+apt update
+apt install -y certbot python3-certbot-nginx
+# Get SSL certificate for the domain
+certbot --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos --email admin@$DOMAIN --redirect
+echo -e "${GREEN}✅ SSL certificate installed and auto-renewal configured${NC}"
 fi
 
 # Set up firewall

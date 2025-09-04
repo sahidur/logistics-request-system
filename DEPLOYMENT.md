@@ -1,6 +1,6 @@
 # 🚀 TikTok Workshop Logistics - Complete Production Deployment Guide
 
-This guide provides **one-command deployment** for the complete TikTok Learning Sharing Workshop logistics system on server **139.59.122.235**.
+This guide provides **one-command deployment** for the complete TikTok Learning Sharing Workshop logistics system on domain **tiktok.somadhanhobe.com** with automatic SSL.
 
 ## ⚠️ **Security Notice**
 Ensure your `.env.production` files contain your actual database credentials before deployment. The GitHub repository contains placeholder values for security.
@@ -18,9 +18,9 @@ Ensure your `.env.production` files contain your actual database credentials bef
 
 ## 🌐 Production URLs
 
-- **Main Website**: `http://139.59.122.235`
-- **Admin Dashboard**: `http://139.59.122.235/admin`  
-- **API Health Check**: `http://139.59.122.235/health`
+- **Main Website**: `https://tiktok.somadhanhobe.com`
+- **Admin Dashboard**: `https://tiktok.somadhanhobe.com/admin`  
+- **API Health Check**: `https://tiktok.somadhanhobe.com/api/health`
 
 ## � Admin Credentials
 
@@ -56,9 +56,9 @@ After successful deployment, you'll see:
 ```
 🎉 DEPLOYMENT COMPLETE!
 ===============================================
-🌐 Website: http://139.59.122.235
-👤 Admin Panel: http://139.59.122.235/admin
-🔧 API Health: http://139.59.122.235/health
+🌐 Website: https://tiktok.somadhanhobe.com
+👤 Admin Panel: https://tiktok.somadhanhobe.com/admin
+🔧 API Health: https://tiktok.somadhanhobe.com/api/health
 ```
 
 # 2. Install backend dependencies
