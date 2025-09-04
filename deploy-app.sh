@@ -262,39 +262,91 @@ fi
 
 # Set up SSL with Let's Encrypt (after basic nginx is working)
 echo -e "${YELLOW}🔒 Setting up SSL with Let's Encrypt...${NC}"
-sleep 2  # Give nginx time to start properly
+
+# Ensure nginx is stopped during SSL setup to free port 80
+systemctl stop nginx
+sleep 2
 
 # Install certbot if not already installed
 apt update
 apt install -y certbot python3-certbot-nginx
+
+# Start nginx again
+systemctl start nginx
+sleep 3
 
 # Test if the domain is accessible first
 echo -e "${YELLOW}Testing domain accessibility...${NC}"
 if curl -f http://$DOMAIN > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Domain is accessible, proceeding with SSL setup${NC}"
     
-    # Get SSL certificate for the domain
-    certbot --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos --email admin@$DOMAIN --redirect
+    # Try SSL setup with standalone mode first (more reliable)
+    echo -e "${YELLOW}Attempting SSL setup...${NC}"
+    systemctl stop nginx  # Stop nginx for standalone mode
+    
+    # Get certificate using standalone mode
+    certbot certonly --standalone \
+        -d $DOMAIN -d www.$DOMAIN \
+        --non-interactive \
+        --agree-tos \
+        --email admin@$DOMAIN \
+        --preferred-challenges http
     
     if [ $? -eq 0 ]; then
-        echo -e "${GREEN}✅ SSL certificate installed and auto-renewal configured${NC}"
-        nginx -t && systemctl reload nginx
+        echo -e "${GREEN}✅ SSL certificate obtained${NC}"
+        
+        # Update nginx config to use SSL
+        systemctl start nginx
+        
+        # Now configure nginx for SSL
+        certbot --nginx \
+            -d $DOMAIN -d www.$DOMAIN \
+            --non-interactive \
+            --redirect
+            
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}✅ SSL certificate installed and nginx configured${NC}"
+            nginx -t && systemctl reload nginx
+        else
+            echo -e "${YELLOW}⚠️  Nginx SSL configuration failed, but certificate exists${NC}"
+            systemctl start nginx  # Ensure nginx is running
+        fi
     else
-        echo -e "${YELLOW}⚠️  SSL setup failed, but site is accessible via HTTP${NC}"
-        echo -e "${YELLOW}   You can manually run: sudo certbot --nginx -d $DOMAIN${NC}"
+        echo -e "${YELLOW}⚠️  SSL certificate setup failed${NC}"
+        echo -e "${YELLOW}   Possible issues:${NC}"
+        echo "   1. Domain DNS not pointing to this server"
+        echo "   2. Ports 80/443 blocked by cloud firewall"
+        echo "   3. Another service using port 80"
+        echo ""
+        echo -e "${YELLOW}   Site will be available at: http://$DOMAIN${NC}"
+        echo -e "${YELLOW}   Run manual SSL setup: sudo ./setup-ssl.sh${NC}"
+        systemctl start nginx  # Ensure nginx is running
     fi
 else
     echo -e "${YELLOW}⚠️  Domain not accessible yet, skipping SSL setup${NC}"
     echo -e "${YELLOW}   Site will be available at: http://$DOMAIN${NC}"
-    echo -e "${YELLOW}   Run SSL setup later with: sudo ./setup-ssl.sh${NC}"
+    echo -e "${YELLOW}   Manual SSL setup: sudo ./setup-ssl.sh${NC}"
 fi
 fi
 
-# Set up firewall
-echo -e "${YELLOW}🔥 Configuring firewall...${NC}"
+# Set up firewall BEFORE SSL setup
+echo -e "${YELLOW}🔥 Configuring firewall for ports 80, 443...${NC}"
+# Ensure UFW is installed
+apt update && apt install -y ufw
+
+# Configure UFW firewall
+ufw --force reset
+ufw default deny incoming
+ufw default allow outgoing
 ufw allow OpenSSH
-ufw allow 'Nginx Full'
+ufw allow 22/tcp
+ufw allow 80/tcp
+ufw allow 443/tcp  
+ufw allow 4000/tcp
 ufw --force enable
+
+echo -e "${GREEN}✅ Firewall configured - ports 80, 443 are now open${NC}"
+ufw status verbose
 
 echo -e "${GREEN}🎉 DEPLOYMENT COMPLETE!${NC}"
 echo ""

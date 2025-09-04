@@ -1,6 +1,26 @@
 #!/bin/bash
 
-# SSL Auto-Setup Script for tiktok.somadhanhobe.com
+# SSL Auto-Setup Script for tiecho -e "${YELLOW}Step 4: Checking and configuring firewall...${NC}"
+# Ensure ports are open
+ufw allow 80/tcp
+ufw allow 443/tcp
+ufw --force enable
+echo "Firewall status:"
+ufw status verbose
+
+echo -e "${YELLOW}Step 5: Checking for port conflicts...${NC}"
+# Check what's using port 80 and 443
+echo "Services using port 80:"
+lsof -i :80 || echo "Port 80 is free"
+echo "Services using port 443:"  
+lsof -i :443 || echo "Port 443 is free"
+
+# Stop conflicting services
+if systemctl is-active --quiet apache2; then
+    echo "Stopping Apache2..."
+    systemctl stop apache2
+    systemctl disable apache2
+fitok.somadhanhobe.com
 echo "🔒 Setting up SSL for tiktok.somadhanhobe.com"
 echo "============================================="
 
@@ -48,15 +68,40 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo -e "${YELLOW}Step 4: Getting SSL certificate...${NC}"
-# Get SSL certificate
-certbot --nginx \
+echo -e "${YELLOW}Step 6: Testing Nginx configuration...${NC}"
+nginx -t
+if [ $? -ne 0 ]; then
+    echo -e "${RED}❌ Nginx configuration error. Please fix before setting up SSL.${NC}"
+    exit 1
+fi
+
+echo -e "${YELLOW}Step 7: Getting SSL certificate using standalone mode...${NC}"
+# Stop nginx temporarily for standalone mode
+systemctl stop nginx
+
+# Get SSL certificate using standalone mode (more reliable)
+certbot certonly --standalone \
     -d $DOMAIN \
     -d www.$DOMAIN \
     --non-interactive \
     --agree-tos \
     --email admin@$DOMAIN \
-    --redirect
+    --preferred-challenges http
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅ SSL certificate obtained!${NC}"
+    
+    # Start nginx again
+    systemctl start nginx
+    sleep 2
+    
+    # Now configure nginx to use the certificate
+    echo -e "${YELLOW}Step 8: Configuring Nginx for SSL...${NC}"
+    certbot --nginx \
+        -d $DOMAIN \
+        -d www.$DOMAIN \
+        --non-interactive \
+        --redirect
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✅ SSL certificate successfully installed!${NC}"
