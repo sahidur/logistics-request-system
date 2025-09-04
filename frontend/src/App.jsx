@@ -138,7 +138,7 @@ function LogisticsForm() {
           <p><strong>Dear Team,</strong></p>
           <p>To ensure smooth arrangements for the <strong>TikTok Learning Sharing Workshop (September 11, 2025)</strong>, please submit any logistics requirements using this form.</p>
           <div className="deadline-notice">
-            📌 <strong>Deadline: September 7, 2025, at 12:00 PM sharp</strong>
+            📌 <strong>Deadline: September 7, 2025, at 5:00 PM sharp</strong>
           </div>
           <p className="warning-text">Requests submitted beyond this deadline will be considered but cannot be guaranteed due to procurement and finance constraints.</p>
           <p className="signature">Thank you for your cooperation!<br/>– <strong>Logistics Team</strong></p>
