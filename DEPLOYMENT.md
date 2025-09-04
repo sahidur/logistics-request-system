@@ -58,7 +58,7 @@ curl -s https://raw.githubusercontent.com/sahidur/logistics-request-system/main/
 
 ### Step 1: Connect to Your Server
 ```bash
-ssh root@139.59.122.235
+ssh root@146.190.106.123
 ```
 
 ### Step 2: Find or Create Workshop Directory
