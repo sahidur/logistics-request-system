@@ -60,6 +60,7 @@ function LogisticsForm() {
     setSubmitting(true);
     
     console.log('🔄 Starting form submission...');
+    console.log('🌐 API URL:', API_ENDPOINTS.SUBMIT);
     
     const formData = new FormData();
     formData.append('name', basic.name);
@@ -86,7 +87,7 @@ function LogisticsForm() {
       
       // Add timeout to prevent hanging
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
       
       const response = await fetch(API_ENDPOINTS.SUBMIT, {
         method: 'POST',
@@ -96,15 +97,28 @@ function LogisticsForm() {
       
       clearTimeout(timeoutId);
       console.log('📨 Response received:', response.status, response.statusText);
+      console.log('📨 Response headers:', response.headers);
+      console.log('📨 Content-Type:', response.headers.get('content-type'));
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('API Error:', errorData);
-        throw new Error(errorData.error || 'Failed to submit request');
+      // Check content type before parsing
+      const contentType = response.headers.get('content-type');
+      let responseData;
+      
+      if (contentType && contentType.includes('application/json')) {
+        responseData = await response.json();
+      } else {
+        // If not JSON, get as text to see what we're receiving
+        const textResponse = await response.text();
+        console.error('🚨 Non-JSON response received:', textResponse.substring(0, 200));
+        throw new Error(`Server returned HTML instead of JSON. This usually means the API endpoint is not found or there's a server error. Response: ${textResponse.substring(0, 100)}...`);
       }
       
-      const result = await response.json();
-      console.log('Success:', result);
+      if (!response.ok) {
+        console.error('API Error:', responseData);
+        throw new Error(responseData.error || 'Failed to submit request');
+      }
+      
+      console.log('✅ Success:', responseData);
       setModalType('success');
       setModalMessage('Request submitted successfully! 🎉');
       setShowModal(true);
