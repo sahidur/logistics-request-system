@@ -12,7 +12,50 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const app = express();
-const prisma = new PrismaClient();
+
+// Configure Prisma with optimized database connection settings
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL
+    }
+  },
+  log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+});
+
+// Connection pool management
+const setupDatabaseConnection = async () => {
+  try {
+    // Test database connection
+    await prisma.$connect();
+    console.log('✅ Database connected successfully');
+    
+    // Setup graceful shutdown
+    const gracefulShutdown = async (signal) => {
+      console.log(`🔄 Received ${signal}. Shutting down gracefully...`);
+      try {
+        await prisma.$disconnect();
+        console.log('✅ Database connections closed');
+        process.exit(0);
+      } catch (error) {
+        console.error('❌ Error during shutdown:', error);
+        process.exit(1);
+      }
+    };
+    
+    // Handle process termination signals
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    process.on('SIGQUIT', () => gracefulShutdown('SIGQUIT'));
+    
+  } catch (error) {
+    console.error('❌ Database connection failed:', error);
+    process.exit(1);
+  }
+};
+
+// Initialize database connection
+setupDatabaseConnection();
 
 // Environment variables with defaults
 const PORT = process.env.PORT || 4000;
