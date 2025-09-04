@@ -40,8 +40,8 @@ const upload = multer({
 // CORS configuration for production
 const corsOptions = {
   origin: NODE_ENV === 'production' 
-    ? [FRONTEND_URL] 
-    : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176', 'http://localhost:5177', 'http://localhost:5178'],
+    ? [FRONTEND_URL, 'http://134.209.110.148', 'http://134.209.110.148:80'] 
+    : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176', 'http://localhost:5177', 'http://localhost:5178', 'http://localhost:5179'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

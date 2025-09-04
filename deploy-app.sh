@@ -16,7 +16,7 @@ NC='\033[0m'
 # Configuration
 APP_DIR="/var/www/tik-workshop"
 APP_USER="tikworkshop"
-DOMAIN="your-domain.com"
+DOMAIN="134.209.110.148"
 
 # Create application user if doesn't exist
 if ! id "$APP_USER" &>/dev/null; then
