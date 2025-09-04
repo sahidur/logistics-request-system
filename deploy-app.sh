@@ -8,15 +8,25 @@ find /etc/nginx -name "*.conf" -exec grep -l "wdp.joycalls.com" {} + 2>/dev/null
     mv "$file" "$file.disabled.$(date +%Y%m%d_%H%M%S)"
 done
 
-# Deploy our nginx configuration
-cp frontend/nginx.conf /etc/nginx/sites-available/default
+# Use basic HTTP configuration first
+echo "  📝 Deploying basic HTTP configuration..."
+cp nginx-basic.conf /etc/nginx/sites-available/default
 nginx -t
 if [ $? -eq 0 ]; then
     systemctl reload nginx
-    echo "  ✅ Nginx configuration updated"
+    echo "  ✅ Basic Nginx configuration deployed"
 else
-    echo "  ❌ Nginx configuration error!"
-    exit 1
+    echo "  ❌ Basic Nginx configuration error!"
+    echo "  📋 Trying alternative configuration..."
+    cp frontend/nginx.conf /etc/nginx/sites-available/default
+    nginx -t
+    if [ $? -eq 0 ]; then
+        systemctl reload nginx
+        echo "  ✅ Alternative Nginx configuration deployed"
+    else
+        echo "  ❌ All Nginx configurations failed!"
+        exit 1
+    fi
 ficho "🚀 Deploying TikTok Learning Sharing Workshop - COMPLETE SYSTEM"
 echo "================================================================="
 
@@ -250,13 +260,34 @@ else
     echo -e "${YELLOW}⚠️  API health check failed - may be starting up${NC}"
 fi
 
-# Set up SSL with Let's Encrypt (optional)
-echo -e "${YELLOW}🔒 Setting up SSL with Let's Encrypt automatically...${NC}"
+# Set up SSL with Let's Encrypt (after basic nginx is working)
+echo -e "${YELLOW}🔒 Setting up SSL with Let's Encrypt...${NC}"
+sleep 2  # Give nginx time to start properly
+
+# Install certbot if not already installed
 apt update
 apt install -y certbot python3-certbot-nginx
-# Get SSL certificate for the domain
-certbot --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos --email admin@$DOMAIN --redirect
-echo -e "${GREEN}✅ SSL certificate installed and auto-renewal configured${NC}"
+
+# Test if the domain is accessible first
+echo -e "${YELLOW}Testing domain accessibility...${NC}"
+if curl -f http://$DOMAIN > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ Domain is accessible, proceeding with SSL setup${NC}"
+    
+    # Get SSL certificate for the domain
+    certbot --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos --email admin@$DOMAIN --redirect
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ SSL certificate installed and auto-renewal configured${NC}"
+        nginx -t && systemctl reload nginx
+    else
+        echo -e "${YELLOW}⚠️  SSL setup failed, but site is accessible via HTTP${NC}"
+        echo -e "${YELLOW}   You can manually run: sudo certbot --nginx -d $DOMAIN${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠️  Domain not accessible yet, skipping SSL setup${NC}"
+    echo -e "${YELLOW}   Site will be available at: http://$DOMAIN${NC}"
+    echo -e "${YELLOW}   Run SSL setup later with: sudo ./setup-ssl.sh${NC}"
+fi
 fi
 
 # Set up firewall
