@@ -84,6 +84,18 @@ app.get('/health', (req, res) => {
   });
 });
 
+// API Health check endpoint (for frontend)
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'TikTok Workshop API is running',
+    timestamp: new Date().toISOString(),
+    environment: NODE_ENV,
+    uptime: Math.floor(process.uptime()),
+    database: 'Connected'
+  });
+});
+
 // Root route
 app.get('/', (req, res) => {
   res.json({ 
