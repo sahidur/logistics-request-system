@@ -1,6 +1,6 @@
 # 🚀 TikTok Workshop Logistics - Complete Production Deployment Guide
 
-This guide provides **one-command deployment** for the complete TikTok Learning Sharing Workshop logistics system on server **134.209.110.148**.
+This guide provides **one-command deployment** for the complete TikTok Learning Sharing Workshop logistics system on server **139.59.122.235**.
 
 ## ⚠️ **Security Notice**
 Ensure your `.env.production` files contain your actual database credentials before deployment. The GitHub repository contains placeholder values for security.
@@ -18,9 +18,9 @@ Ensure your `.env.production` files contain your actual database credentials bef
 
 ## 🌐 Production URLs
 
-- **Main Website**: `http://134.209.110.148`
-- **Admin Dashboard**: `http://134.209.110.148/admin`  
-- **API Health Check**: `http://134.209.110.148/health`
+- **Main Website**: `http://139.59.122.235`
+- **Admin Dashboard**: `http://139.59.122.235/admin`  
+- **API Health Check**: `http://139.59.122.235/health`
 
 ## � Admin Credentials
 
@@ -33,7 +33,7 @@ Password: TikTok_Admin_2025_Server_148!
 
 ### Step 1: Connect to Your Server
 ```bash
-ssh root@134.209.110.148
+ssh root@139.59.122.235
 ```
 
 ### Step 2: Clone and Deploy (ONE COMMAND!)
@@ -56,9 +56,9 @@ After successful deployment, you'll see:
 ```
 🎉 DEPLOYMENT COMPLETE!
 ===============================================
-🌐 Website: http://134.209.110.148
-👤 Admin Panel: http://134.209.110.148/admin
-🔧 API Health: http://134.209.110.148/health
+🌐 Website: http://139.59.122.235
+👤 Admin Panel: http://139.59.122.235/admin
+🔧 API Health: http://139.59.122.235/health
 ```
 
 # 2. Install backend dependencies
@@ -99,10 +99,10 @@ sudo nginx -t && sudo systemctl restart nginx
 ## 🌐 Access URLs
 
 **Your Production URLs:**
-- **Main App**: `http://134.209.110.148`
-- **Admin Login**: `http://134.209.110.148/admin`
-- **API Health**: `http://134.209.110.148:4000/health`
-- **API Base**: `http://134.209.110.148:4000`
+- **Main App**: `http://139.59.122.235`
+- **Admin Login**: `http://139.59.122.235/admin`
+- **API Health**: `http://139.59.122.235:4000/health`
+- **API Base**: `http://139.59.122.235:4000`
 
 ## 🛡️ Security Notes
 
@@ -117,8 +117,8 @@ sudo nginx -t && sudo systemctl restart nginx
 2. **Test Firewall**:
    ```bash
    # Test if ports are accessible
-   curl http://134.209.110.148:4000/health
-   curl http://134.209.110.148
+   curl http://139.59.122.235:4000/health
+   curl http://139.59.122.235
    ```
 
 3. **Database Security**:
@@ -157,7 +157,7 @@ prisma.user.findMany().then(users => {
 
 **Common Issues:**
 
-1. **Can't access http://134.209.110.148**:
+1. **Can't access http://139.59.122.235**:
    ```bash
    sudo systemctl status nginx
    sudo ufw status
@@ -183,11 +183,11 @@ prisma.user.findMany().then(users => {
 **Quick Test Commands**:
 ```bash
 # Test backend directly
-curl http://134.209.110.148:4000/health
+curl http://139.59.122.235:4000/health
 
 # Test frontend
-curl -I http://134.209.110.148
+curl -I http://139.59.122.235
 
 # Test admin login page
-curl -I http://134.209.110.148/admin
+curl -I http://139.59.122.235/admin
 ```

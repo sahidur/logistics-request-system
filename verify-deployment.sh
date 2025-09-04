@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-DOMAIN="134.209.110.148"
+DOMAIN="139.59.122.235"
 API_PORT="4000"
 
 echo -e "${YELLOW}🌐 Testing deployment...${NC}"

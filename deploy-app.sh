@@ -16,7 +16,7 @@ NC='\033[0m'
 # Configuration
 APP_DIR="/var/www/tik-workshop"
 APP_USER="tikworkshop"
-DOMAIN="134.209.110.148"
+DOMAIN="139.59.122.235"
 NGINX_ROOT="/var/www/html"
 
 # Create application user if doesn't exist
