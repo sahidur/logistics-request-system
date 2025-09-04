@@ -354,7 +354,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <Router basename="/">
       <Routes>
         <Route path="/" element={<LogisticsForm />} />
         <Route path="/admin" element={<AdminLogin onLogin={handleAdminLogin} />} />
