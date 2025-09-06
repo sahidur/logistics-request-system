@@ -9,6 +9,7 @@ import { API_ENDPOINTS } from './config';
 function App() {
   const [adminToken, setAdminToken] = useState(null);
   const [tokenChecked, setTokenChecked] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
 
   // Check for existing token on app load
   useEffect(() => {
@@ -17,6 +18,7 @@ function App() {
       console.log('🔍 Token check on app load:', storedToken ? 'Found' : 'Not found');
       
       if (storedToken) {
+        setIsValidating(true);
         // Validate token by making a test API call
         try {
           const response = await fetch(API_ENDPOINTS.REQUESTS, {
@@ -32,12 +34,15 @@ function App() {
             console.log('❌ Token is invalid, clearing storage');
             localStorage.removeItem('adminToken');
             sessionStorage.removeItem('adminToken');
+            setAdminToken(null);
           }
         } catch (error) {
           console.log('❌ Token validation failed:', error);
           localStorage.removeItem('adminToken');
           sessionStorage.removeItem('adminToken');
+          setAdminToken(null);
         }
+        setIsValidating(false);
       }
       setTokenChecked(true);
     };
@@ -60,7 +65,7 @@ function App() {
   };
 
   // Show loading until token check is complete
-  if (!tokenChecked) {
+  if (!tokenChecked || isValidating) {
     return (
       <div style={{ 
         display: 'flex', 
@@ -71,7 +76,9 @@ function App() {
       }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '32px', marginBottom: '16px' }}>🔄</div>
-          <div style={{ fontSize: '18px', color: '#6c757d' }}>Loading...</div>
+          <div style={{ fontSize: '18px', color: '#6c757d' }}>
+            {isValidating ? 'Validating session...' : 'Loading...'}
+          </div>
         </div>
       </div>
     );
