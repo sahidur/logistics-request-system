@@ -287,6 +287,9 @@ EOF
 # Install frontend dependencies
 echo -e "${YELLOW}📦 Installing frontend dependencies...${NC}"
 
+# Ensure npm bin is in PATH
+export PATH="$PATH:./node_modules/.bin"
+
 # Check Node.js version before installing
 node_major_version=$(node --version | cut -d'.' -f1 | sed 's/v//')
 
@@ -301,6 +304,9 @@ else
     npm install
     check_success "Frontend dependencies installation"
 fi
+
+# Clear npm cache to avoid issues
+npm cache clean --force
 
 # Verify Vite is installed and working
 echo -e "${YELLOW}🔍 Verifying Vite installation...${NC}"
@@ -331,23 +337,33 @@ fi
 echo -e "${YELLOW}🔨 Building frontend...${NC}"
 echo -e "${YELLOW}⏳ This may take a few minutes...${NC}"
 
-# Build with timeout (5 minutes)
-timeout 300s npm run build
-build_exit_code=$?
+# Ensure PATH includes node_modules/.bin
+export PATH="$PATH:./node_modules/.bin:$(npm bin)"
 
-if [ $build_exit_code -eq 0 ]; then
-    echo -e "${GREEN}✅ Frontend build completed successfully${NC}"
-elif [ $build_exit_code -eq 124 ]; then
-    echo -e "${RED}❌ Frontend build timed out after 5 minutes${NC}"
-    exit 1
+# Try multiple build approaches
+echo -e "${YELLOW}🔧 Attempting build with npx...${NC}"
+if timeout 300s npx vite build; then
+    echo -e "${GREEN}✅ Frontend build completed successfully with npx${NC}"
+elif timeout 300s npm run build; then
+    echo -e "${GREEN}✅ Frontend build completed successfully with npm${NC}"
+elif timeout 300s ./node_modules/.bin/vite build; then
+    echo -e "${GREEN}✅ Frontend build completed successfully with direct binary${NC}"
 else
-    echo -e "${RED}❌ Frontend build failed${NC}"
+    echo -e "${RED}❌ All build attempts failed${NC}"
+    echo -e "${YELLOW}📋 Debug info:${NC}"
+    echo "PATH: $PATH"
+    echo "npm bin: $(npm bin 2>/dev/null || echo 'npm bin failed')"
+    echo "vite binary exists: $([ -f ./node_modules/.bin/vite ] && echo 'yes' || echo 'no')"
+    echo "node_modules contents:"
+    ls -la node_modules/.bin/ | grep vite || echo "No vite found in .bin"
     exit 1
 fi
 
 # Verify build output exists
 if [ -d "dist" ] && [ "$(ls -A dist)" ]; then
     echo -e "${GREEN}✅ Build output verified in dist/ directory${NC}"
+    echo "Build contents:"
+    ls -la dist/
 else
     echo -e "${RED}❌ Build output not found or empty${NC}"
     exit 1
