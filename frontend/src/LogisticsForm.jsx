@@ -23,6 +23,8 @@ function LogisticsForm() {
   const [submitting, setSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
+  const [showProgress, setShowProgress] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const addItem = () => {
     if (items.length < 10) {
@@ -75,8 +77,13 @@ function LogisticsForm() {
     }
 
     setSubmitting(true);
+    setShowProgress(true);
+    setUploadProgress(0);
     
     try {
+      // Simulate progress steps
+      setUploadProgress(10);
+      
       const formData = new FormData();
       
       // User data
@@ -87,6 +94,7 @@ function LogisticsForm() {
       };
       
       formData.append('userData', JSON.stringify(userData));
+      setUploadProgress(30);
       
       // Items data
       const itemsData = items.map(item => ({
@@ -98,6 +106,7 @@ function LogisticsForm() {
       }));
       
       formData.append('items', JSON.stringify(itemsData));
+      setUploadProgress(50);
 
       // File uploads
       items.forEach((item, index) => {
@@ -105,27 +114,38 @@ function LogisticsForm() {
           formData.append(`sampleFile_${index}`, item.sampleFile);
         }
       });
+      setUploadProgress(70);
 
       const response = await fetch(`${API_BASE_URL}/api/logistics`, {
         method: 'POST',
         body: formData,
       });
+      
+      setUploadProgress(90);
 
       if (response.ok) {
         const result = await response.json();
-        setModalMessage(`✅ Request submitted successfully! Your Request ID: ${result.id || 'TIK-' + Date.now()}`);
-        setShowModal(true);
+        setUploadProgress(100);
         
-        // Reset form
-        setBasic({ name: '', email: '', teamName: '', customTeam: '' });
-        setItems([{ name: '', description: '', quantity: '', price: '', sampleFile: null, source: '' }]);
+        // Small delay to show 100% completion
+        setTimeout(() => {
+          setShowProgress(false);
+          setModalMessage(`✅ Request submitted successfully! Your Request ID: ${result.id || 'TIK-' + Date.now()}`);
+          setShowModal(true);
+          
+          // Reset form
+          setBasic({ name: '', email: '', teamName: '', customTeam: '' });
+          setItems([{ name: '', description: '', quantity: '', price: '', sampleFile: null, source: '' }]);
+        }, 500);
       } else {
         const errorData = await response.json();
+        setShowProgress(false);
         setModalMessage(`❌ Submission failed: ${errorData.message || 'Unknown error'}`);
         setShowModal(true);
       }
     } catch (error) {
       console.error('Submission error:', error);
+      setShowProgress(false);
       setModalMessage('❌ Network error. Please check your connection and try again.');
       setShowModal(true);
     } finally {
@@ -357,6 +377,35 @@ function LogisticsForm() {
             </button>
           </div>
         </form>
+
+        {/* Progress Bar Popup */}
+        {showProgress && (
+          <div className="progress-overlay">
+            <div className="progress-popup">
+              <div className="progress-header">
+                <h3>🚀 Submitting Your Request</h3>
+                <p>Please wait while we process your logistics request...</p>
+              </div>
+              <div className="progress-container">
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill" 
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                </div>
+                <div className="progress-text">{uploadProgress}%</div>
+              </div>
+              <div className="progress-status">
+                {uploadProgress < 30 && "🔄 Preparing your data..."}
+                {uploadProgress >= 30 && uploadProgress < 50 && "📝 Processing form data..."}
+                {uploadProgress >= 50 && uploadProgress < 70 && "📎 Uploading files..."}
+                {uploadProgress >= 70 && uploadProgress < 90 && "🌐 Sending to server..."}
+                {uploadProgress >= 90 && uploadProgress < 100 && "✅ Finalizing submission..."}
+                {uploadProgress === 100 && "🎉 Request submitted successfully!"}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Modal */}
         {showModal && (
