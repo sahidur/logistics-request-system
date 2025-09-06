@@ -88,7 +88,8 @@ function LogisticsForm() {
     setShowProgress(true);
     setUploadProgress(0);
     
-    // Prevent body scroll and ensure popup is visible
+    // Scroll to top of page and prevent body scroll
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     document.body.style.overflow = 'hidden';
     
     try {
