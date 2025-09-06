@@ -86,14 +86,10 @@ function LogisticsForm() {
       
       const formData = new FormData();
       
-      // User data
-      const userData = {
-        name: basic.name.trim(),
-        email: basic.email.trim(),
-        teamName: basic.teamName === 'Other' ? basic.customTeam.trim() : basic.teamName
-      };
-      
-      formData.append('userData', JSON.stringify(userData));
+      // Add user data directly (not nested in userData)
+      formData.append('name', basic.name.trim());
+      formData.append('email', basic.email.trim());
+      formData.append('teamName', basic.teamName === 'Other' ? basic.customTeam.trim() : basic.teamName);
       setUploadProgress(30);
       
       // Items data
@@ -108,15 +104,15 @@ function LogisticsForm() {
       formData.append('items', JSON.stringify(itemsData));
       setUploadProgress(50);
 
-      // File uploads
-      items.forEach((item, index) => {
+      // File uploads - add files in order to match backend expectation
+      items.forEach((item) => {
         if (item.sampleFile) {
-          formData.append(`sampleFile_${index}`, item.sampleFile);
+          formData.append('files', item.sampleFile);
         }
       });
       setUploadProgress(70);
 
-      const response = await fetch(`${API_BASE_URL}/api/logistics`, {
+      const response = await fetch(`${API_BASE_URL}/api/requests`, {
         method: 'POST',
         body: formData,
       });
