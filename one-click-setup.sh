@@ -293,15 +293,50 @@ export PATH="$PATH:./node_modules/.bin"
 # Check Node.js version before installing
 node_major_version=$(node --version | cut -d'.' -f1 | sed 's/v//')
 
+# Clean install to avoid conflicts
+echo -e "${YELLOW}🧹 Cleaning previous installation...${NC}"
+rm -rf node_modules package-lock.json .vite
+
 if [ "$node_major_version" -lt 20 ]; then
     echo -e "${YELLOW}⚠️  Node.js version is older than 20. Installing compatible package versions...${NC}"
     
-    # Install compatible versions for Node 18
-    npm install vite@^4.5.0 @vitejs/plugin-react@^4.0.0 react-router-dom@^6.8.0
+    # Create a compatible package.json for Node 18
+    cp package.json package.json.bak
+    cat > package.json << 'EOF'
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npx vite",
+    "build": "npx vite build",
+    "lint": "eslint .",
+    "preview": "npx vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "vite": "^4.5.0"
+  }
+}
+EOF
+    
+    npm install
     check_success "Compatible dependencies installation"
 else
-    # Install normal dependencies for Node 20+
-    npm install
+    # For Node 20+, still use compatible versions to avoid conflicts
+    echo -e "${YELLOW}⚠️  Installing stable Vite version to avoid conflicts...${NC}"
+    npm install vite@^4.5.0 @vitejs/plugin-react@^4.0.0 react@^18.2.0 react-dom@^18.2.0 react-router-dom@^6.8.0
     check_success "Frontend dependencies installation"
 fi
 
@@ -317,18 +352,38 @@ if [ -f "node_modules/.bin/vite" ]; then
 else
     echo -e "${RED}❌ Vite binary not found${NC}"
     echo -e "${YELLOW}⚠️  Attempting to install Vite directly...${NC}"
-    npm install vite@latest
+    npm install vite@^4.5.0
 fi
 
-# Try to get version with timeout
-echo -e "${YELLOW}🔍 Getting Vite version...${NC}"
-vite_version=$(timeout 10s npx vite --version 2>/dev/null || echo "timeout")
+# Create a simplified vite.config.js to avoid import issues
+echo -e "${YELLOW}🔧 Creating simplified Vite config...${NC}"
+cat > vite.config.js << 'EOF'
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-if [ "$vite_version" = "timeout" ]; then
+export default defineConfig({
+  plugins: [react()],
+  base: '/',
+  server: {
+    port: 5173,
+    host: true
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false
+  }
+})
+EOF
+
+# Try to get version with timeout
+echo -e "${YELLOW}🔍 Testing Vite configuration...${NC}"
+vite_test=$(timeout 10s npx vite --version 2>/dev/null || echo "timeout")
+
+if [ "$vite_test" = "timeout" ]; then
     echo -e "${YELLOW}⚠️  Vite version check timed out, but continuing with build...${NC}"
-elif [ -n "$vite_version" ]; then
+elif [ -n "$vite_test" ]; then
     echo -e "${GREEN}✅ Vite installed and working${NC}"
-    echo "Vite version: $vite_version"
+    echo "Vite version: $vite_test"
 else
     echo -e "${YELLOW}⚠️  Could not verify Vite version, but attempting build...${NC}"
 fi
