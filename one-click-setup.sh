@@ -51,11 +51,22 @@ check_success "Essential packages installation"
 echo -e "${BLUE}📋 Step 2: Install Core Software${NC}"
 echo "================================================"
 
-# Install Node.js 18
-echo -e "${YELLOW}📦 Installing Node.js 18...${NC}"
-curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+# Install Node.js 20 (Required for Vite 7+)
+echo -e "${YELLOW}📦 Installing Node.js 20...${NC}"
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 apt-get install -y nodejs
 check_success "Node.js installation"
+
+# Verify Node.js version
+echo -e "${YELLOW}🔍 Verifying Node.js version...${NC}"
+node_version=$(node --version)
+echo "Node.js version: $node_version"
+if [[ "$node_version" < "v20.0.0" ]]; then
+    echo -e "${RED}❌ Node.js version is too old for Vite. Minimum required: v20.0.0${NC}"
+    exit 1
+else
+    echo -e "${GREEN}✅ Node.js version is compatible${NC}"
+fi
 
 # Install PM2
 echo -e "${YELLOW}📦 Installing PM2...${NC}"
@@ -242,16 +253,31 @@ EOF
 
 # Install frontend dependencies
 echo -e "${YELLOW}📦 Installing frontend dependencies...${NC}"
-npm install
-check_success "Frontend dependencies installation"
 
-# Verify Vite is installed
-echo -e "${YELLOW}🔍 Verifying Vite installation...${NC}"
-if npm list vite > /dev/null 2>&1; then
-    echo -e "${GREEN}✅ Vite installed${NC}"
+# Check Node.js version before installing
+node_major_version=$(node --version | cut -d'.' -f1 | sed 's/v//')
+
+if [ "$node_major_version" -lt 20 ]; then
+    echo -e "${YELLOW}⚠️  Node.js version is older than 20. Installing compatible package versions...${NC}"
+    
+    # Install compatible versions for Node 18
+    npm install vite@^4.5.0 @vitejs/plugin-react@^4.0.0 react-router-dom@^6.8.0
+    check_success "Compatible dependencies installation"
 else
-    echo -e "${RED}❌ Vite missing, installing...${NC}"
-    npm install vite
+    # Install normal dependencies for Node 20+
+    npm install
+    check_success "Frontend dependencies installation"
+fi
+
+# Verify Vite is installed and working
+echo -e "${YELLOW}🔍 Verifying Vite installation...${NC}"
+if npx vite --version > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ Vite installed and working${NC}"
+    vite_version=$(npx vite --version)
+    echo "Vite version: $vite_version"
+else
+    echo -e "${RED}❌ Vite installation failed${NC}"
+    exit 1
 fi
 
 # Build frontend
