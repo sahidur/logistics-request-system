@@ -8,6 +8,9 @@ export const config = {
   VERSION: import.meta.env.VITE_APP_VERSION || '1.0.0'
 };
 
+// Export API_BASE_URL for backward compatibility
+export const API_BASE_URL = config.API_URL.replace('/api', '');
+
 // API endpoints (API_URL already includes /api path)
 export const API_ENDPOINTS = {
   REGISTER: `${config.API_URL}/register`,
