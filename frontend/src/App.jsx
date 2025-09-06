@@ -14,36 +14,51 @@ function App() {
   // Check for existing token on app load
   useEffect(() => {
     const checkToken = async () => {
+      console.log('🚀 App.jsx: Starting token check...');
       const storedToken = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
-      console.log('🔍 Token check on app load:', storedToken ? 'Found' : 'Not found');
+      console.log('🔍 Token check on app load:', storedToken ? 'Found token' : 'No token found');
       
       if (storedToken) {
+        console.log('🔄 Validating token with API...');
         setIsValidating(true);
         // Validate token by making a test API call
         try {
+          console.log('📡 Making API request to:', API_ENDPOINTS.REQUESTS);
           const response = await fetch(API_ENDPOINTS.REQUESTS, {
             headers: {
               'Authorization': `Bearer ${storedToken}`
             }
           });
           
+          console.log('📨 API Response status:', response.status);
           if (response.ok) {
-            console.log('✅ Token is valid');
+            console.log('✅ Token is valid, setting admin token');
             setAdminToken(storedToken);
           } else {
-            console.log('❌ Token is invalid, clearing storage');
+            console.log('❌ Token is invalid (status:', response.status, '), clearing storage');
             localStorage.removeItem('adminToken');
             sessionStorage.removeItem('adminToken');
             setAdminToken(null);
           }
         } catch (error) {
-          console.log('❌ Token validation failed:', error);
-          localStorage.removeItem('adminToken');
-          sessionStorage.removeItem('adminToken');
-          setAdminToken(null);
+          console.error('❌ Token validation failed with error:', error);
+          console.error('❌ Error details:', error.message);
+          // Don't clear token on network errors - could be temporary
+          if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            console.log('🌐 Network error detected, keeping token for retry');
+            setAdminToken(storedToken);
+          } else {
+            console.log('🗑️ Non-network error, clearing token');
+            localStorage.removeItem('adminToken');
+            sessionStorage.removeItem('adminToken');
+            setAdminToken(null);
+          }
         }
         setIsValidating(false);
+      } else {
+        console.log('ℹ️ No token found, proceeding without authentication');
       }
+      console.log('✅ Token check completed');
       setTokenChecked(true);
     };
 
@@ -66,6 +81,7 @@ function App() {
 
   // Show loading until token check is complete
   if (!tokenChecked || isValidating) {
+    console.log('⏳ App.jsx: Showing loading state - tokenChecked:', tokenChecked, 'isValidating:', isValidating);
     return (
       <div style={{ 
         display: 'flex', 
@@ -84,6 +100,7 @@ function App() {
     );
   }
 
+  console.log('🎯 App.jsx: Rendering main app - adminToken:', adminToken ? 'Present' : 'Not present');
   return (
     <Router>
       <div className="App">

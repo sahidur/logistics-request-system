@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base: '/',
   build: {
     outDir: 'dist',
     emptyOutDir: true,
@@ -14,5 +14,8 @@ export default defineConfig({
         manualChunks: undefined
       }
     }
+  },
+  server: {
+    historyApiFallback: true
   }
 })

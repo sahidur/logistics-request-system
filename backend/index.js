@@ -13,6 +13,9 @@ require('dotenv').config();
 
 const app = express();
 
+// Get the base URL for the server
+const BASE_URL = process.env.BASE_URL || 'http://localhost:4000';
+
 // Configure Prisma with optimized database connection settings
 const prisma = new PrismaClient({
   datasources: {
@@ -342,7 +345,7 @@ app.get('/api/requests/export', authenticateToken, async (req, res) => {
         quantity: item.quantity,
         price: item.price,
         source: item.source,
-        sampleFile: item.sampleFile ? `http://localhost:4000/uploads/${item.sampleFile}` : '',
+        sampleFile: item.sampleFile ? `${BASE_URL}/uploads/${item.sampleFile}` : '',
       });
     });
   });
