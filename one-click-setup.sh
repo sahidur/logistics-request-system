@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # 🚀 TikTok Workshop - ONE CLICK SETUP
-# Run this on your server: 146.190.106.123
+# Run this on your server: 152.42.229.232
 # Usage: chmod +x one-click-setup.sh && sudo ./one-click-setup.sh
 
 set -e
 
 echo "🎯 TikTok Learning Sharing Workshop - ONE CLICK SETUP"
 echo "====================================================="
-echo "🖥️  Server: 146.190.106.123"
+echo "🖥️  Server: 152.42.229.232"
 echo "🌐 Domain: tiktok.somadhanhobe.com"
 echo ""
 
@@ -119,7 +119,7 @@ else
     cat > .env << EOF
 NODE_ENV=production
 PORT=4000
-JWT_SECRET=TikTok_Workshop_2025_Production_JWT_Secret_146_190_106_123_SecureKey_xyz789
+JWT_SECRET=TikTok_Workshop_2025_Production_JWT_Secret_152_42_229_232_SecureKey_xyz789
 DATABASE_URL=$database_url
 EOF
 fi
@@ -203,7 +203,7 @@ cd $APP_DIR/frontend
 # Create production environment file
 cat > .env.production << EOF
 VITE_API_URL=https://tiktok.somadhanhobe.com/api
-VITE_API_URL_HTTP=http://146.190.106.123:4000/api
+VITE_API_URL_HTTP=http://152.42.229.232:4000/api
 EOF
 
 # Install frontend dependencies
@@ -227,7 +227,7 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server;
     
-    server_name tiktok.somadhanhobe.com 146.190.106.123;
+    server_name tiktok.somadhanhobe.com 152.42.229.232;
     root /var/www/tik-workshop/frontend/dist;
     index index.html;
     
@@ -329,7 +329,7 @@ echo "================================="
 echo ""
 echo -e "${BLUE}📋 Your TikTok Workshop is now live at:${NC}"
 echo -e "${GREEN}🌐 Website: http://tiktok.somadhanhobe.com${NC}"
-echo -e "${GREEN}🌐 IP Access: http://146.190.106.123${NC}"
+echo -e "${GREEN}🌐 IP Access: http://152.42.229.232${NC}"
 echo -e "${GREEN}👨‍💼 Admin Panel: http://tiktok.somadhanhobe.com/admin${NC}"
 echo ""
 echo -e "${BLUE}📋 Service Management:${NC}"
@@ -345,7 +345,7 @@ echo "• Password: admin123"
 echo ""
 echo -e "${YELLOW}⚠️ Remember to:${NC}"
 echo "1. Change default admin password"
-echo "2. Configure your domain DNS to point to 146.190.106.123"
+echo "2. Configure your domain DNS to point to 152.42.229.232"
 echo "3. Monitor logs regularly"
 echo ""
 echo -e "${GREEN}✨ Happy workshopping! ✨${NC}"

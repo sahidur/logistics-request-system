@@ -87,8 +87,8 @@ const corsOptions = {
         'http://localhost:3000', // Alternative dev port
         'https://tiktok.somadhanhobe.com',    // Production domain HTTPS
         'http://tiktok.somadhanhobe.com',     // Production domain HTTP (redirect to HTTPS)
-        'http://146.190.106.123',    // Server IP fallback
-        'https://146.190.106.123'    // Server IP HTTPS fallback
+        'http://152.42.229.232',    // Server IP fallback
+        'https://152.42.229.232'    // Server IP HTTPS fallback
     ],
     credentials: true
 };

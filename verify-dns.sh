@@ -11,7 +11,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-TARGET_IP="146.190.106.123"
+TARGET_IP="152.42.229.232"
 DOMAIN="tiktok.somadhanhobe.com"
 
 echo -e "${YELLOW}Expected IP: $TARGET_IP${NC}"

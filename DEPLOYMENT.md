@@ -1,6 +1,12 @@
 # 🚀 TikTok Workshop Logistics - Complete Production Deployment Guide
 
-This guide provides **one-command deployment** for the complete TikTok Learning Sharing Workshop logistics system on domain **tiktok.somadhanhobe.com** with automatic SSL.
+This guide provides **one-command deployment** for the complete TikTok Learning Sharing Workshop logistics system on domain **tiktok.somadhanhobe.ccurl http://152.42.229.232:4000/health
+
+# Test frontend
+curl -I http://152.42.229.232
+
+# Test admin route
+curl -I http://152.42.229.232/adminth automatic SSL.
 
 ## ⚠️ **Security Notice**
 Ensure your `.env.production` files contain your actual database credentials before deployment. The GitHub repository contains placeholder values for security.
@@ -58,7 +64,7 @@ curl -s https://raw.githubusercontent.com/sahidur/logistics-request-system/main/
 
 ### Step 1: Connect to Your Server
 ```bash
-ssh root@146.190.106.123
+ssh root@152.42.229.232
 ```
 
 ### Step 2: Find or Create Workshop Directory
@@ -131,10 +137,10 @@ sudo nginx -t && sudo systemctl restart nginx
 ## 🌐 Access URLs
 
 **Your Production URLs:**
-- **Main App**: `http://139.59.122.235`
-- **Admin Login**: `http://139.59.122.235/admin`
-- **API Health**: `http://139.59.122.235:4000/health`
-- **API Base**: `http://139.59.122.235:4000`
+- **Main App**: `http://152.42.229.232`
+- **Admin Login**: `http://152.42.229.232/admin`
+- **API Health**: `http://152.42.229.232:4000/health`
+- **API Base**: `http://152.42.229.232:4000`
 
 ## 🛡️ Security Notes
 
@@ -190,7 +196,7 @@ prisma.user.findMany().then(users => {
 
 **Common Issues:**
 
-1. **Can't access http://139.59.122.235**:
+1. **Can't access http://152.42.229.232**:
    ```bash
    sudo systemctl status nginx
    sudo ufw status
