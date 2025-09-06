@@ -57,6 +57,49 @@ const setupDatabaseConnection = async () => {
 // Initialize database connection
 setupDatabaseConnection();
 
+// Create default admin user if it doesn't exist
+const createAdminUser = async () => {
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@logistics.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'TikTok_Admin_2025_Server_232!';
+    const adminName = process.env.ADMIN_NAME || 'Admin';
+    
+    // Check if admin user already exists
+    const existingAdmin = await prisma.user.findUnique({
+      where: { email: adminEmail }
+    });
+    
+    if (!existingAdmin) {
+      // Create admin user
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      const adminUser = await prisma.user.create({
+        data: {
+          email: adminEmail,
+          password: hashedPassword,
+          name: adminName,
+          teamName: 'Administration',
+          role: 'ADMIN'
+        }
+      });
+      console.log('👤 Admin user created successfully:', adminEmail);
+    } else {
+      console.log('👤 Admin user already exists:', adminEmail);
+      // Update admin password to ensure it matches current env
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      await prisma.user.update({
+        where: { email: adminEmail },
+        data: { password: hashedPassword }
+      });
+      console.log('🔑 Admin password updated to match environment variables');
+    }
+  } catch (error) {
+    console.error('❌ Error creating admin user:', error);
+  }
+};
+
+// Create admin user after database connection
+createAdminUser();
+
 // Environment variables with defaults
 const PORT = process.env.PORT || 4000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -184,11 +227,25 @@ app.post('/api/register', async (req, res) => {
 // Login
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
+  console.log('🔐 Login attempt for:', email);
+  
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  if (!user) {
+    console.log('❌ User not found:', email);
     return res.status(401).json({ error: 'Invalid credentials' });
   }
+  
+  console.log('👤 User found:', user.email, 'Role:', user.role);
+  const passwordMatch = await bcrypt.compare(password, user.password);
+  console.log('🔑 Password match:', passwordMatch);
+  
+  if (!passwordMatch) {
+    console.log('❌ Password mismatch for:', email);
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  
   const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+  console.log('✅ Login successful for:', email);
   res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role } });
 });
 
