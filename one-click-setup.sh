@@ -114,15 +114,31 @@ if [ -f "../.env.production" ]; then
     cp ../.env.production .env
     echo -e "${GREEN}✅ Production environment copied from repository${NC}"
     
-    # Show database configuration status
-    DB_URL=$(grep "DATABASE_URL=" .env | cut -d'=' -f2- | tr -d '"')
-    DIRECT_URL=$(grep "DIRECT_URL=" .env | cut -d'=' -f2- | tr -d '"')
+    # Debug: Show the actual lines from .env file
+    echo -e "${YELLOW}🔍 Debug: Environment file contents:${NC}"
+    echo "=========================="
+    grep -E "^(DATABASE_URL|DIRECT_URL)" .env || echo "No database URLs found"
+    echo "=========================="
+    
+    # Parse environment variables more carefully
+    DB_URL=$(grep "^DATABASE_URL=" .env | cut -d'=' -f2- | sed 's/^"//' | sed 's/"$//')
+    DIRECT_URL=$(grep "^DIRECT_URL=" .env | cut -d'=' -f2- | sed 's/^"//' | sed 's/"$//')
+    
+    echo "Parsed DATABASE_URL: ${DB_URL:0:50}..."
+    echo "Parsed DIRECT_URL: ${DIRECT_URL:0:50}..."
+    
     if [ -n "$DB_URL" ] && [ -n "$DIRECT_URL" ]; then
         echo -e "${GREEN}✅ Database URLs configured${NC}"
     else
         echo -e "${RED}❌ Database URLs not properly configured${NC}"
         echo "DATABASE_URL found: $([ -n "$DB_URL" ] && echo "Yes" || echo "No")"
         echo "DIRECT_URL found: $([ -n "$DIRECT_URL" ] && echo "Yes" || echo "No")"
+        
+        # If DIRECT_URL is missing but DATABASE_URL exists, use DATABASE_URL as DIRECT_URL
+        if [ -n "$DB_URL" ] && [ -z "$DIRECT_URL" ]; then
+            echo -e "${YELLOW}⚠️  DIRECT_URL missing, using DATABASE_URL as fallback${NC}"
+            echo "DIRECT_URL=\"$DB_URL\"" >> .env
+        fi
     fi
 else
     echo -e "${YELLOW}⚠️  .env.production not found, creating basic configuration...${NC}"
@@ -160,15 +176,32 @@ fi
 
 # Verify environment variables are properly set
 echo -e "${YELLOW}🔍 Verifying environment configuration...${NC}"
-echo "Environment file contents:"
-echo "=========================="
-grep -E "^(DATABASE_URL|DIRECT_URL|NODE_ENV|PORT)" .env || echo "No environment variables found"
-echo "=========================="
+echo "Final environment file contents:"
+echo "================================="
+cat .env
+echo "================================="
 
 # Load environment variables for subsequent commands
 if [ -f ".env" ]; then
-    export $(grep -v '^#' .env | xargs)
+    # Export environment variables, handling quotes properly
+    set -a  # automatically export all variables
+    source .env
+    set +a  # stop automatically exporting
     echo -e "${GREEN}✅ Environment variables loaded${NC}"
+    
+    # Verify critical environment variables
+    if [ -z "$DATABASE_URL" ]; then
+        echo -e "${RED}❌ DATABASE_URL is empty${NC}"
+        exit 1
+    fi
+    
+    if [ -z "$DIRECT_URL" ]; then
+        echo -e "${RED}❌ DIRECT_URL is empty${NC}"
+        exit 1
+    fi
+    
+    echo "DATABASE_URL length: ${#DATABASE_URL}"
+    echo "DIRECT_URL length: ${#DIRECT_URL}"
 else
     echo -e "${RED}❌ .env file not found${NC}"
     exit 1
