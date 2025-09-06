@@ -304,19 +304,54 @@ fi
 
 # Verify Vite is installed and working
 echo -e "${YELLOW}🔍 Verifying Vite installation...${NC}"
-if npx vite --version > /dev/null 2>&1; then
+
+# First check if vite is in node_modules
+if [ -f "node_modules/.bin/vite" ]; then
+    echo -e "${GREEN}✅ Vite binary found in node_modules${NC}"
+else
+    echo -e "${RED}❌ Vite binary not found${NC}"
+    echo -e "${YELLOW}⚠️  Attempting to install Vite directly...${NC}"
+    npm install vite@latest
+fi
+
+# Try to get version with timeout
+echo -e "${YELLOW}🔍 Getting Vite version...${NC}"
+vite_version=$(timeout 10s npx vite --version 2>/dev/null || echo "timeout")
+
+if [ "$vite_version" = "timeout" ]; then
+    echo -e "${YELLOW}⚠️  Vite version check timed out, but continuing with build...${NC}"
+elif [ -n "$vite_version" ]; then
     echo -e "${GREEN}✅ Vite installed and working${NC}"
-    vite_version=$(npx vite --version)
     echo "Vite version: $vite_version"
 else
-    echo -e "${RED}❌ Vite installation failed${NC}"
-    exit 1
+    echo -e "${YELLOW}⚠️  Could not verify Vite version, but attempting build...${NC}"
 fi
 
 # Build frontend
 echo -e "${YELLOW}🔨 Building frontend...${NC}"
-npm run build
-check_success "Frontend build"
+echo -e "${YELLOW}⏳ This may take a few minutes...${NC}"
+
+# Build with timeout (5 minutes)
+timeout 300s npm run build
+build_exit_code=$?
+
+if [ $build_exit_code -eq 0 ]; then
+    echo -e "${GREEN}✅ Frontend build completed successfully${NC}"
+elif [ $build_exit_code -eq 124 ]; then
+    echo -e "${RED}❌ Frontend build timed out after 5 minutes${NC}"
+    exit 1
+else
+    echo -e "${RED}❌ Frontend build failed${NC}"
+    exit 1
+fi
+
+# Verify build output exists
+if [ -d "dist" ] && [ "$(ls -A dist)" ]; then
+    echo -e "${GREEN}✅ Build output verified in dist/ directory${NC}"
+else
+    echo -e "${RED}❌ Build output not found or empty${NC}"
+    exit 1
+fi
 
 echo -e "${BLUE}📋 Step 6: Configure Nginx${NC}"
 echo "================================================"
