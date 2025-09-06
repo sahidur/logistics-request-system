@@ -45,9 +45,12 @@ coverage/
 # nyc test coverage
 .nyc_output
 
-# Uploads
-uploads/*
-!uploads/.gitkeep
+# Uploads (user files)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Generated files
+backend/generated/
 
 # IDE files
 .vscode/
