@@ -144,8 +144,10 @@ function LogisticsForm() {
             To ensure smooth arrangements for the TikTok Learning Sharing Workshop (September 11, 2025), please submit any logistics requirements using this form.<br />
             <span className="deadline-line">📌 Deadline: September 8, 2025, at 12:00 PM sharp</span><br />
             Requests submitted beyond this deadline will be considered but cannot be guaranteed due to procurement and finance constraints.<br /><br />
-            Thank you for your cooperation!<br />
-            <span className="signature">– Logistics Team</span>
+            <div className="closing-section">
+              Thank you for your cooperation!<br />
+              <span className="signature">– Logistics Team</span>
+            </div>
           </div>
         </div>
 
