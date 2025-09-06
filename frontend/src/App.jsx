@@ -4,6 +4,7 @@ import './App.css';
 import LogisticsForm from './LogisticsForm';
 import AdminLogin from './AdminLogin';
 import AdminDashboard from './AdminDashboard';
+import { API_ENDPOINTS } from './config';
 
 function App() {
   const [adminToken, setAdminToken] = useState(null);
@@ -11,12 +12,32 @@ function App() {
 
   // Check for existing token on app load
   useEffect(() => {
-    const checkToken = () => {
+    const checkToken = async () => {
       const storedToken = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
       console.log('🔍 Token check on app load:', storedToken ? 'Found' : 'Not found');
       
       if (storedToken) {
-        setAdminToken(storedToken);
+        // Validate token by making a test API call
+        try {
+          const response = await fetch(API_ENDPOINTS.REQUESTS, {
+            headers: {
+              'Authorization': `Bearer ${storedToken}`
+            }
+          });
+          
+          if (response.ok) {
+            console.log('✅ Token is valid');
+            setAdminToken(storedToken);
+          } else {
+            console.log('❌ Token is invalid, clearing storage');
+            localStorage.removeItem('adminToken');
+            sessionStorage.removeItem('adminToken');
+          }
+        } catch (error) {
+          console.log('❌ Token validation failed:', error);
+          localStorage.removeItem('adminToken');
+          sessionStorage.removeItem('adminToken');
+        }
       }
       setTokenChecked(true);
     };

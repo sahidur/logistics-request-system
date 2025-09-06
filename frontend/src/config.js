@@ -17,6 +17,6 @@ export const API_ENDPOINTS = {
   LOGIN: `${config.API_URL}/login`,
   REQUESTS: `${config.API_URL}/requests`,
   SUBMIT: `${config.API_URL}/requests`,
-  EXPORT: `${config.API_URL}/export`,
+  EXPORT: `${config.API_URL}/requests/export`,
   HEALTH: `${config.API_URL}/health`
 };
