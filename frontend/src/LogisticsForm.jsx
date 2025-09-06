@@ -27,10 +27,10 @@ function LogisticsForm() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Cleanup effect to restore scroll on unmount
+  // Cleanup effect (no longer needed but kept for consistency)
   useEffect(() => {
     return () => {
-      document.body.style.overflow = 'auto';
+      // Cleanup if needed
     };
   }, []);
 
@@ -88,10 +88,6 @@ function LogisticsForm() {
     setShowProgress(true);
     setUploadProgress(0);
     
-    // Scroll to top of page and prevent body scroll
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    document.body.style.overflow = 'hidden';
-    
     try {
       // Simulate progress steps
       setUploadProgress(10);
@@ -147,14 +143,12 @@ function LogisticsForm() {
       } else {
         const errorData = await response.json();
         setShowProgress(false);
-        document.body.style.overflow = 'auto'; // Restore scroll on error
         setModalMessage(`❌ Submission failed: ${errorData.message || 'Unknown error'}`);
         setShowModal(true);
       }
     } catch (error) {
       console.error('Submission error:', error);
       setShowProgress(false);
-      document.body.style.overflow = 'auto'; // Restore scroll on error
       setModalMessage('❌ Network error. Please check your connection and try again.');
       setShowModal(true);
     } finally {
@@ -162,10 +156,9 @@ function LogisticsForm() {
     }
   };
 
-  // Function to close success popup and restore scroll
+  // Function to close success popup
   const closeSuccessPopup = () => {
     setShowSuccess(false);
-    document.body.style.overflow = 'auto';
   };
 
   return (
@@ -377,6 +370,53 @@ function LogisticsForm() {
             </div>
           </div>
 
+          {/* Inline Progress Bar */}
+          {showProgress && (
+            <div className="progress-overlay">
+              <div className="progress-popup">
+                <div className="progress-header">
+                  <h3>🚀 Submitting Your Request</h3>
+                  <p>Please wait while we process your logistics request...</p>
+                </div>
+                <div className="progress-container">
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                  <div className="progress-text">{uploadProgress}%</div>
+                </div>
+                <div className="progress-status">
+                  {uploadProgress < 30 && "🔄 Preparing your data..."}
+                  {uploadProgress >= 30 && uploadProgress < 50 && "📝 Processing form data..."}
+                  {uploadProgress >= 50 && uploadProgress < 70 && "📎 Uploading files..."}
+                  {uploadProgress >= 70 && uploadProgress < 90 && "🌐 Sending to server..."}
+                  {uploadProgress >= 90 && uploadProgress < 100 && "✅ Finalizing submission..."}
+                  {uploadProgress === 100 && "🎉 Request submitted successfully!"}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Inline Success Popup */}
+          {showSuccess && (
+            <div className="success-overlay">
+              <div className="success-popup">
+                <div className="success-icon">
+                  <div className="success-checkmark"></div>
+                </div>
+                <h3 className="success-title">Success!</h3>
+                <p className="success-message">
+                  Your logistics request has been submitted successfully. Our team will review your request and get back to you soon.
+                </p>
+                <button className="success-button" onClick={closeSuccessPopup}>
+                  Perfect!
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="form-actions">
             <button type="submit" className="submit-btn" disabled={submitting}>
               {submitting ? (
@@ -444,24 +484,6 @@ function LogisticsForm() {
                   Got it!
                 </button>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Success Popup */}
-        {showSuccess && (
-          <div className="success-overlay" onClick={closeSuccessPopup}>
-            <div className="success-popup" onClick={(e) => e.stopPropagation()}>
-              <div className="success-icon">
-                <div className="success-checkmark"></div>
-              </div>
-              <h3 className="success-title">Success!</h3>
-              <p className="success-message">
-                Your logistics request has been submitted successfully. Our team will review your request and get back to you soon.
-              </p>
-              <button className="success-button" onClick={closeSuccessPopup}>
-                Perfect!
-              </button>
             </div>
           </div>
         )}
