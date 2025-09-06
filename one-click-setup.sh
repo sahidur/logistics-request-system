@@ -105,10 +105,13 @@ if [ -f "../.env.production" ]; then
     
     # Show database configuration status
     DB_URL=$(grep "DATABASE_URL=" .env | cut -d'=' -f2- | tr -d '"')
-    if [ -n "$DB_URL" ]; then
-        echo -e "${GREEN}✅ Database URL configured${NC}"
+    DIRECT_URL=$(grep "DIRECT_URL=" .env | cut -d'=' -f2- | tr -d '"')
+    if [ -n "$DB_URL" ] && [ -n "$DIRECT_URL" ]; then
+        echo -e "${GREEN}✅ Database URLs configured${NC}"
     else
-        echo -e "${RED}❌ Database URL not found in .env.production${NC}"
+        echo -e "${RED}❌ Database URLs not properly configured${NC}"
+        echo "DATABASE_URL found: $([ -n "$DB_URL" ] && echo "Yes" || echo "No")"
+        echo "DIRECT_URL found: $([ -n "$DIRECT_URL" ] && echo "Yes" || echo "No")"
     fi
 else
     echo -e "${YELLOW}⚠️  .env.production not found, creating basic configuration...${NC}"
@@ -120,7 +123,8 @@ else
 NODE_ENV=production
 PORT=4000
 JWT_SECRET=TikTok_Workshop_2025_Production_JWT_Secret_152_42_229_232_SecureKey_xyz789
-DATABASE_URL=$database_url
+DATABASE_URL="$database_url"
+DIRECT_URL="$database_url"
 EOF
 fi
 
@@ -128,6 +132,22 @@ fi
 echo -e "${YELLOW}📦 Installing backend dependencies...${NC}"
 npm install --production
 check_success "Backend dependencies installation"
+
+# Verify environment variables are properly set
+echo -e "${YELLOW}🔍 Verifying environment configuration...${NC}"
+echo "Environment file contents:"
+echo "=========================="
+grep -E "^(DATABASE_URL|DIRECT_URL|NODE_ENV|PORT)" .env || echo "No environment variables found"
+echo "=========================="
+
+# Load environment variables for subsequent commands
+if [ -f ".env" ]; then
+    export $(grep -v '^#' .env | xargs)
+    echo -e "${GREEN}✅ Environment variables loaded${NC}"
+else
+    echo -e "${RED}❌ .env file not found${NC}"
+    exit 1
+fi
 
 # Generate Prisma client
 echo -e "${YELLOW}🗄️ Generating Prisma client...${NC}"
@@ -141,11 +161,6 @@ check_success "Database migrations"
 
 # Test database connection
 echo -e "${YELLOW}🧪 Testing database connection...${NC}"
-
-# Load environment variables for subsequent commands
-if [ -f ".env" ]; then
-    export $(grep -v '^#' .env | xargs)
-fi
 
 node -e "
 const { PrismaClient } = require('./generated/prisma');
