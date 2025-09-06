@@ -134,6 +134,11 @@ echo -e "${YELLOW}🗄️ Generating Prisma client...${NC}"
 npx prisma generate
 check_success "Prisma client generation"
 
+# Run database migrations to create tables
+echo -e "${YELLOW}🏗️ Running database migrations...${NC}"
+npx prisma migrate deploy || npx prisma db push
+check_success "Database migrations"
+
 # Test database connection
 echo -e "${YELLOW}🧪 Testing database connection...${NC}"
 
