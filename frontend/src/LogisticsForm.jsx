@@ -25,6 +25,7 @@ function LogisticsForm() {
   const [modalMessage, setModalMessage] = useState('');
   const [showProgress, setShowProgress] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const addItem = () => {
     if (items.length < 10) {
@@ -126,8 +127,7 @@ function LogisticsForm() {
         // Small delay to show 100% completion
         setTimeout(() => {
           setShowProgress(false);
-          setModalMessage(`✅ Request submitted successfully! Your Request ID: ${result.id || 'TIK-' + Date.now()}`);
-          setShowModal(true);
+          setShowSuccess(true);
           
           // Reset form
           setBasic({ name: '', email: '', teamName: '', customTeam: '' });
@@ -425,6 +425,24 @@ function LogisticsForm() {
                   Got it!
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success Popup */}
+        {showSuccess && (
+          <div className="success-overlay" onClick={() => setShowSuccess(false)}>
+            <div className="success-popup" onClick={(e) => e.stopPropagation()}>
+              <div className="success-icon">
+                <div className="success-checkmark"></div>
+              </div>
+              <h3 className="success-title">Success!</h3>
+              <p className="success-message">
+                Your logistics request has been submitted successfully. Our team will review your request and get back to you soon.
+              </p>
+              <button className="success-button" onClick={() => setShowSuccess(false)}>
+                Perfect!
+              </button>
             </div>
           </div>
         )}
