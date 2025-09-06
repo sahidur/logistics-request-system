@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from './config';
 
 const TEAM_OPTIONS = [
@@ -26,6 +26,13 @@ function LogisticsForm() {
   const [showProgress, setShowProgress] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // Cleanup effect to restore scroll on unmount
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
 
   const addItem = () => {
     if (items.length < 10) {
@@ -80,6 +87,9 @@ function LogisticsForm() {
     setSubmitting(true);
     setShowProgress(true);
     setUploadProgress(0);
+    
+    // Prevent body scroll and ensure popup is visible
+    document.body.style.overflow = 'hidden';
     
     try {
       // Simulate progress steps
@@ -136,17 +146,25 @@ function LogisticsForm() {
       } else {
         const errorData = await response.json();
         setShowProgress(false);
+        document.body.style.overflow = 'auto'; // Restore scroll on error
         setModalMessage(`❌ Submission failed: ${errorData.message || 'Unknown error'}`);
         setShowModal(true);
       }
     } catch (error) {
       console.error('Submission error:', error);
       setShowProgress(false);
+      document.body.style.overflow = 'auto'; // Restore scroll on error
       setModalMessage('❌ Network error. Please check your connection and try again.');
       setShowModal(true);
     } finally {
       setSubmitting(false);
     }
+  };
+
+  // Function to close success popup and restore scroll
+  const closeSuccessPopup = () => {
+    setShowSuccess(false);
+    document.body.style.overflow = 'auto';
   };
 
   return (
@@ -431,7 +449,7 @@ function LogisticsForm() {
 
         {/* Success Popup */}
         {showSuccess && (
-          <div className="success-overlay" onClick={() => setShowSuccess(false)}>
+          <div className="success-overlay" onClick={closeSuccessPopup}>
             <div className="success-popup" onClick={(e) => e.stopPropagation()}>
               <div className="success-icon">
                 <div className="success-checkmark"></div>
@@ -440,7 +458,7 @@ function LogisticsForm() {
               <p className="success-message">
                 Your logistics request has been submitted successfully. Our team will review your request and get back to you soon.
               </p>
-              <button className="success-button" onClick={() => setShowSuccess(false)}>
+              <button className="success-button" onClick={closeSuccessPopup}>
                 Perfect!
               </button>
             </div>

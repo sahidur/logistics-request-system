@@ -906,6 +906,7 @@
   z-index: 10000;
   animation: progressFadeIn 0.3s ease-out;
   backdrop-filter: blur(10px);
+  overflow: hidden;
 }
 
 .progress-popup {
@@ -915,10 +916,14 @@
   padding: var(--space-8);
   max-width: 450px;
   width: 90vw;
+  max-height: 90vh;
   box-shadow: var(--shadow-2xl);
   animation: progressSlideUp 0.4s ease-out;
   backdrop-filter: blur(20px);
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .progress-header {
@@ -1004,11 +1009,11 @@
 @keyframes progressSlideUp {
   from {
     opacity: 0;
-    transform: translateY(30px) scale(0.95);
+    transform: translate(-50%, -50%) translateY(30px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate(-50%, -50%) translateY(0) scale(1);
   }
 }
 
@@ -1031,6 +1036,7 @@
   z-index: 10001;
   animation: successFadeIn 0.3s ease-out;
   backdrop-filter: blur(10px);
+  overflow: hidden;
 }
 
 .success-popup {
@@ -1040,10 +1046,14 @@
   padding: var(--space-8);
   max-width: 400px;
   width: 90vw;
+  max-height: 90vh;
   box-shadow: var(--shadow-2xl);
   animation: successSlideUp 0.5s ease-out;
   text-align: center;
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .success-icon {
@@ -1122,11 +1132,11 @@
 @keyframes successSlideUp {
   from {
     opacity: 0;
-    transform: translateY(30px) scale(0.9);
+    transform: translate(-50%, -50%) translateY(30px) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate(-50%, -50%) translateY(0) scale(1);
   }
 }
 
