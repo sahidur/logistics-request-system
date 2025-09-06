@@ -157,7 +157,12 @@ fi
 
 # Install backend dependencies
 echo -e "${YELLOW}📦 Installing backend dependencies...${NC}"
-npm install
+
+# Suppress npm warnings for cleaner output
+export NPM_CONFIG_AUDIT=false
+export NPM_CONFIG_FUND=false
+
+npm install --silent 2>/dev/null || npm install
 check_success "Backend dependencies installation"
 
 # Verify critical dependencies are installed
@@ -290,6 +295,10 @@ echo -e "${YELLOW}📦 Installing frontend dependencies...${NC}"
 # Ensure npm bin is in PATH
 export PATH="$PATH:./node_modules/.bin"
 
+# Suppress npm deprecation warnings for cleaner output
+export NPM_CONFIG_AUDIT=false
+export NPM_CONFIG_FUND=false
+
 # Check Node.js version before installing
 node_major_version=$(node --version | cut -d'.' -f1 | sed 's/v//')
 
@@ -331,17 +340,17 @@ if [ "$node_major_version" -lt 20 ]; then
 }
 EOF
     
-    npm install
+    npm install --silent 2>/dev/null || npm install
     check_success "Compatible dependencies installation"
 else
     # For Node 20+, still use compatible versions to avoid conflicts
     echo -e "${YELLOW}⚠️  Installing stable Vite version to avoid conflicts...${NC}"
-    npm install vite@^4.5.0 @vitejs/plugin-react@^4.0.0 react@^18.2.0 react-dom@^18.2.0 react-router-dom@^6.8.0
+    npm install --silent vite@^4.5.0 @vitejs/plugin-react@^4.0.0 react@^18.2.0 react-dom@^18.2.0 react-router-dom@^6.8.0 2>/dev/null || npm install vite@^4.5.0 @vitejs/plugin-react@^4.0.0 react@^18.2.0 react-dom@^18.2.0 react-router-dom@^6.8.0
     check_success "Frontend dependencies installation"
 fi
 
 # Clear npm cache to avoid issues
-npm cache clean --force
+npm cache clean --force --silent 2>/dev/null || npm cache clean --force
 
 # Verify Vite is installed and working
 echo -e "${YELLOW}🔍 Verifying Vite installation...${NC}"
