@@ -139,75 +139,82 @@ function LogisticsForm() {
         <h2>🎯 TikTok Learning Sharing Workshop</h2>
         
         <div className="workshop-info">
-          <p>Logistics Request System</p>
+          <p>📋 Logistics Request System</p>
+          <p>Submit your requirements for the upcoming TikTok workshop. Please fill in all required fields.</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="form-content">
           {/* Basic Information */}
-          <div className="basic-info">
-            <h3>👤 Basic Information</h3>
-            <div className="form-group">
-              <label htmlFor="name">Full Name *</label>
-              <input
-                type="text"
-                id="name"
-                value={basic.name}
-                onChange={(e) => updateBasic('name', e.target.value)}
-                placeholder="Enter your full name"
-                disabled={submitting}
-                required
-              />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="email">Email Address *</label>
-              <input
-                type="email"
-                id="email"
-                value={basic.email}
-                onChange={(e) => updateBasic('email', e.target.value)}
-                placeholder="Enter your email address"
-                disabled={submitting}
-                required
-              />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="teamName">Team/Department *</label>
-              <select
-                id="teamName"
-                value={basic.teamName}
-                onChange={(e) => updateBasic('teamName', e.target.value)}
-                disabled={submitting}
-                required
-              >
-                <option value="">Select your team</option>
-                {TEAM_OPTIONS.map((team) => (
-                  <option key={team} value={team}>{team}</option>
-                ))}
-              </select>
-            </div>
-            
-            {basic.teamName === 'Other' && (
+          <div className="form-section">
+            <h3 className="section-title">👤 Basic Information</h3>
+            <div className="basic-info">
               <div className="form-group">
-                <label htmlFor="customTeam">Specify Team *</label>
+                <label htmlFor="name" className="form-label">Full Name *</label>
                 <input
                   type="text"
-                  id="customTeam"
-                  value={basic.customTeam}
-                  onChange={(e) => updateBasic('customTeam', e.target.value)}
-                  placeholder="Enter your team name"
+                  id="name"
+                  className="form-input"
+                  value={basic.name}
+                  onChange={(e) => updateBasic('name', e.target.value)}
+                  placeholder="Enter your full name"
                   disabled={submitting}
                   required
                 />
               </div>
-            )}
+              
+              <div className="form-group">
+                <label htmlFor="email" className="form-label">Email Address *</label>
+                <input
+                  type="email"
+                  id="email"
+                  className="form-input"
+                  value={basic.email}
+                  onChange={(e) => updateBasic('email', e.target.value)}
+                  placeholder="Enter your email address"
+                  disabled={submitting}
+                  required
+                />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="teamName" className="form-label">Team/Department *</label>
+                <select
+                  id="teamName"
+                  className="form-select"
+                  value={basic.teamName}
+                  onChange={(e) => updateBasic('teamName', e.target.value)}
+                  disabled={submitting}
+                  required
+                >
+                  <option value="">Select your team</option>
+                  {TEAM_OPTIONS.map((team) => (
+                    <option key={team} value={team}>{team}</option>
+                  ))}
+                </select>
+              </div>
+              
+              {basic.teamName === 'Other' && (
+                <div className="form-group">
+                  <label htmlFor="customTeam" className="form-label">Specify Team *</label>
+                  <input
+                    type="text"
+                    id="customTeam"
+                    className="form-input"
+                    value={basic.customTeam}
+                    onChange={(e) => updateBasic('customTeam', e.target.value)}
+                    placeholder="Enter your team name"
+                    disabled={submitting}
+                    required
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Items Section */}
-          <div className="items-section">
-            <div className="add-item-section">
-              <h2>📦 Logistics Items Request</h2>
+          <div className="form-section">
+            <div className="section-header">
+              <h3 className="section-title">📦 Logistics Items Request</h3>
               <button
                 type="button"
                 onClick={addItem}
@@ -218,104 +225,124 @@ function LogisticsForm() {
               </button>
             </div>
 
-            {items.map((item, index) => (
-              <div key={index} className="item-card">
-                <div className="item-header">
-                  <h3>Item {index + 1}</h3>
-                  {items.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeItem(index)}
-                      className="remove-item-btn"
-                      disabled={submitting}
-                    >
-                      🗑️ Remove
-                    </button>
-                  )}
+            <div className="items-container">
+              {items.map((item, index) => (
+                <div key={index} className="item-card">
+                  <div className="item-header">
+                    <div className="item-number">Item {index + 1}</div>
+                    {items.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeItem(index)}
+                        className="remove-item-btn"
+                        disabled={submitting}
+                        title="Remove this item"
+                      >
+                        🗑️ Remove
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="item-grid">
+                    <div className="form-group">
+                      <label className="form-label">Item Name *</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={item.name}
+                        onChange={(e) => updateItem(index, 'name', e.target.value)}
+                        placeholder="Enter item name"
+                        disabled={submitting}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group span-2">
+                      <label className="form-label">Description *</label>
+                      <textarea
+                        className="form-textarea"
+                        value={item.description}
+                        onChange={(e) => updateItem(index, 'description', e.target.value)}
+                        placeholder="Describe the item in detail"
+                        rows="3"
+                        disabled={submitting}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Quantity *</label>
+                      <input
+                        type="number"
+                        className="form-input"
+                        value={item.quantity}
+                        onChange={(e) => updateItem(index, 'quantity', e.target.value)}
+                        placeholder="Enter quantity"
+                        min="1"
+                        disabled={submitting}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Estimated Price (BDT) *</label>
+                      <input
+                        type="number"
+                        className="form-input"
+                        value={item.price}
+                        onChange={(e) => updateItem(index, 'price', e.target.value)}
+                        placeholder="Enter estimated price"
+                        min="0"
+                        step="0.01"
+                        disabled={submitting}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Source/Vendor *</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={item.source}
+                        onChange={(e) => updateItem(index, 'source', e.target.value)}
+                        placeholder="Where to buy this item"
+                        disabled={submitting}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Sample File (Optional)</label>
+                      <input
+                        type="file"
+                        className="form-file-input"
+                        onChange={(e) => updateItem(index, 'sampleFile', e.target.files[0])}
+                        accept="image/*,.pdf,.doc,.docx"
+                        disabled={submitting}
+                      />
+                      <small className="form-hint">Upload image, PDF, or document (Max 10MB)</small>
+                    </div>
+                  </div>
                 </div>
-
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label>Item Name *</label>
-                    <input
-                      type="text"
-                      value={item.name}
-                      onChange={(e) => updateItem(index, 'name', e.target.value)}
-                      placeholder="Enter item name"
-                      disabled={submitting}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Description *</label>
-                    <textarea
-                      value={item.description}
-                      onChange={(e) => updateItem(index, 'description', e.target.value)}
-                      placeholder="Describe the item in detail"
-                      rows="3"
-                      disabled={submitting}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Quantity *</label>
-                    <input
-                      type="number"
-                      value={item.quantity}
-                      onChange={(e) => updateItem(index, 'quantity', e.target.value)}
-                      placeholder="Enter quantity"
-                      min="1"
-                      disabled={submitting}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Estimated Price (BDT) *</label>
-                    <input
-                      type="number"
-                      value={item.price}
-                      onChange={(e) => updateItem(index, 'price', e.target.value)}
-                      placeholder="Enter estimated price"
-                      min="0"
-                      step="0.01"
-                      disabled={submitting}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Source/Vendor *</label>
-                    <input
-                      type="text"
-                      value={item.source}
-                      onChange={(e) => updateItem(index, 'source', e.target.value)}
-                      placeholder="Where to buy this item"
-                      disabled={submitting}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Sample File (Optional)</label>
-                    <input
-                      type="file"
-                      onChange={(e) => updateItem(index, 'sampleFile', e.target.files[0])}
-                      accept="image/*,.pdf,.doc,.docx"
-                      disabled={submitting}
-                    />
-                    <small>Upload image, PDF, or document (Max 10MB)</small>
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          <button type="submit" className="submit-btn" disabled={submitting}>
-            {submitting ? '⏳ Submitting Request...' : '🚀 Submit Logistics Request'}
-          </button>
+          <div className="form-actions">
+            <button type="submit" className="submit-btn" disabled={submitting}>
+              {submitting ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Submitting Request...
+                </>
+              ) : (
+                <>
+                  🚀 Submit Logistics Request
+                </>
+              )}
+            </button>
+          </div>
         </form>
 
         {/* Modal */}
@@ -324,7 +351,11 @@ function LogisticsForm() {
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <h3>📋 Request Status</h3>
-                <button className="modal-close-btn" onClick={() => setShowModal(false)}>
+                <button 
+                  className="modal-close-btn" 
+                  onClick={() => setShowModal(false)}
+                  aria-label="Close modal"
+                >
                   ✖️
                 </button>
               </div>
@@ -333,7 +364,7 @@ function LogisticsForm() {
               </div>
               <div className="modal-footer">
                 <button className="modal-btn" onClick={() => setShowModal(false)}>
-                  OK
+                  Got it!
                 </button>
               </div>
             </div>
