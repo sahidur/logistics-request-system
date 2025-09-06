@@ -191,6 +191,20 @@
   gap: var(--space-3);
 }
 
+.name-email-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.add-item-section {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 2px dashed var(--gray-200);
+  text-align: center;
+}
+
 .form-label {
   display: block;
   font-weight: 500;
@@ -317,6 +331,10 @@
   .section-header {
     flex-direction: column;
     align-items: stretch;
+  }
+  
+  .name-email-row {
+    grid-template-columns: 1fr;
   }
   
   .item-grid {

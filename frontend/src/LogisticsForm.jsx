@@ -140,7 +140,14 @@ function LogisticsForm() {
         
         <div className="workshop-info">
           <p>📋 Logistics Request System</p>
-          <p>Submit your requirements for the upcoming TikTok workshop. Please fill in all required fields.</p>
+          <div className="deadline-notice">
+            <strong>Dear Team,</strong><br /><br />
+            To ensure smooth arrangements for the TikTok Learning Sharing Workshop (September 11, 2025), please submit any logistics requirements using this form.<br />
+            📌 <strong>Deadline: September 8, 2025, at 12:00 PM sharp</strong><br />
+            Requests submitted beyond this deadline will be considered but cannot be guaranteed due to procurement and finance constraints.<br /><br />
+            Thank you for your cooperation!<br />
+            <span className="signature">– Logistics Team</span>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="form-content">
@@ -148,32 +155,34 @@ function LogisticsForm() {
           <div className="form-section">
             <h3 className="section-title">👤 Basic Information</h3>
             <div className="basic-info">
-              <div className="form-group">
-                <label htmlFor="name" className="form-label">Full Name *</label>
-                <input
-                  type="text"
-                  id="name"
-                  className="form-input"
-                  value={basic.name}
-                  onChange={(e) => updateBasic('name', e.target.value)}
-                  placeholder="Enter your full name"
-                  disabled={submitting}
-                  required
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="email" className="form-label">Email Address *</label>
-                <input
-                  type="email"
-                  id="email"
-                  className="form-input"
-                  value={basic.email}
-                  onChange={(e) => updateBasic('email', e.target.value)}
-                  placeholder="Enter your email address"
-                  disabled={submitting}
-                  required
-                />
+              <div className="name-email-row">
+                <div className="form-group">
+                  <label htmlFor="name" className="form-label">Full Name *</label>
+                  <input
+                    type="text"
+                    id="name"
+                    className="form-input"
+                    value={basic.name}
+                    onChange={(e) => updateBasic('name', e.target.value)}
+                    placeholder="Enter your full name"
+                    disabled={submitting}
+                    required
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="email" className="form-label">Email Address *</label>
+                  <input
+                    type="email"
+                    id="email"
+                    className="form-input"
+                    value={basic.email}
+                    onChange={(e) => updateBasic('email', e.target.value)}
+                    placeholder="Enter your email address"
+                    disabled={submitting}
+                    required
+                  />
+                </div>
               </div>
               
               <div className="form-group">
@@ -215,14 +224,6 @@ function LogisticsForm() {
           <div className="form-section">
             <div className="section-header">
               <h3 className="section-title">📦 Logistics Items Request</h3>
-              <button
-                type="button"
-                onClick={addItem}
-                className="add-item-btn"
-                disabled={submitting || items.length >= 10}
-              >
-                ➕ Add Item
-              </button>
             </div>
 
             <div className="items-container">
@@ -238,7 +239,7 @@ function LogisticsForm() {
                         disabled={submitting}
                         title="Remove this item"
                       >
-                        🗑️ Remove
+                        ✕
                       </button>
                     )}
                   </div>
@@ -326,6 +327,17 @@ function LogisticsForm() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="add-item-section">
+              <button
+                type="button"
+                onClick={addItem}
+                className="add-item-btn"
+                disabled={submitting || items.length >= 10}
+              >
+                ➕ Add Another Item
+              </button>
             </div>
           </div>
 
