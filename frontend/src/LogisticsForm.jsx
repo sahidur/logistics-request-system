@@ -136,7 +136,7 @@ function LogisticsForm() {
   return (
     <div className="form-bg">
       <div className="logistics-form">
-        <h2>🎯 TikTok Learning Sharing Workshop</h2>
+        <h2>🎯 TikTok Learning Sharing Workshop – Logistics Request Form</h2>
         
         <div className="workshop-info">
           <p>📋 Logistics Request System</p>
