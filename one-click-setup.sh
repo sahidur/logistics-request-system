@@ -130,8 +130,22 @@ fi
 
 # Install backend dependencies
 echo -e "${YELLOW}📦 Installing backend dependencies...${NC}"
-npm install --production
+npm install
 check_success "Backend dependencies installation"
+
+# Verify critical dependencies are installed
+echo -e "${YELLOW}🔍 Verifying critical dependencies...${NC}"
+if npm list bcryptjs > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ bcryptjs installed${NC}"
+else
+    echo -e "${RED}❌ bcryptjs missing${NC}"
+fi
+
+if npm list @prisma/client > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ @prisma/client installed${NC}"
+else
+    echo -e "${RED}❌ @prisma/client missing${NC}"
+fi
 
 # Verify environment variables are properly set
 echo -e "${YELLOW}🔍 Verifying environment configuration...${NC}"
@@ -180,7 +194,7 @@ check_success "Database connection test"
 echo -e "${YELLOW}👤 Setting up admin user...${NC}"
 node -e "
 const { PrismaClient } = require('./generated/prisma');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function setupAdmin() {
@@ -230,6 +244,15 @@ EOF
 echo -e "${YELLOW}📦 Installing frontend dependencies...${NC}"
 npm install
 check_success "Frontend dependencies installation"
+
+# Verify Vite is installed
+echo -e "${YELLOW}🔍 Verifying Vite installation...${NC}"
+if npm list vite > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ Vite installed${NC}"
+else
+    echo -e "${RED}❌ Vite missing, installing...${NC}"
+    npm install vite
+fi
 
 # Build frontend
 echo -e "${YELLOW}🔨 Building frontend...${NC}"
