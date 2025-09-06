@@ -1,21 +1,28 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import Admin from './Admin';
 
 function AdminDashboard({ token, onLogout }) {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    onLogout();
-    navigate('/admin');
-  };
-
+  // Token validation is now handled in App.jsx
+  // This component only renders when token is valid
+  
   if (!token) {
-    navigate('/admin');
-    return null;
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        backgroundColor: '#f8f9fa'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '24px', marginBottom: '20px' }}>⚠️</div>
+          <div>Access denied. No valid token.</div>
+        </div>
+      </div>
+    );
   }
 
-  return <Admin token={token} onLogout={handleLogout} />;
+  return <Admin token={token} onLogout={onLogout} />;
 }
 
 export default AdminDashboard;

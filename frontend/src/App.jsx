@@ -7,14 +7,21 @@ import AdminDashboard from './AdminDashboard';
 
 function App() {
   const [adminToken, setAdminToken] = useState(null);
+  const [tokenChecked, setTokenChecked] = useState(false);
 
   // Check for existing token on app load
   useEffect(() => {
-    const storedToken = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
-    if (storedToken) {
-      console.log('🔍 Found stored admin token');
-      setAdminToken(storedToken);
-    }
+    const checkToken = () => {
+      const storedToken = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+      console.log('🔍 Token check on app load:', storedToken ? 'Found' : 'Not found');
+      
+      if (storedToken) {
+        setAdminToken(storedToken);
+      }
+      setTokenChecked(true);
+    };
+
+    checkToken();
   }, []);
 
   const handleAdminLogin = (token) => {
@@ -25,11 +32,29 @@ function App() {
   };
 
   const handleAdminLogout = () => {
-    console.log('🚪 Admin logout, clearing token');
+    console.log('🚪 Admin logout, clearing all tokens');
     setAdminToken(null);
     localStorage.removeItem('adminToken');
     sessionStorage.removeItem('adminToken');
   };
+
+  // Show loading until token check is complete
+  if (!tokenChecked) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        backgroundColor: '#f8f9fa'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '32px', marginBottom: '16px' }}>🔄</div>
+          <div style={{ fontSize: '18px', color: '#6c757d' }}>Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Router>
@@ -47,10 +72,14 @@ function App() {
           <Route 
             path="/admin/dashboard" 
             element={
-              <AdminDashboard 
-                token={adminToken} 
-                onLogout={handleAdminLogout} 
-              />
+              adminToken ? (
+                <AdminDashboard 
+                  token={adminToken} 
+                  onLogout={handleAdminLogout} 
+                />
+              ) : (
+                <Navigate to="/admin" replace />
+              )
             } 
           />
           <Route path="*" element={<Navigate to="/" replace />} />
