@@ -139,11 +139,10 @@ function LogisticsForm() {
         <h2>🎯 TikTok Learning Sharing Workshop – Logistics Request Form</h2>
         
         <div className="workshop-info">
-          <p>📋 Logistics Request System</p>
           <div className="deadline-notice">
             <strong>Dear Team,</strong><br /><br />
             To ensure smooth arrangements for the TikTok Learning Sharing Workshop (September 11, 2025), please submit any logistics requirements using this form.<br />
-            📌 <strong>Deadline: September 8, 2025, at 12:00 PM sharp</strong><br />
+            <span className="deadline-line">📌 Deadline: September 8, 2025, at 12:00 PM sharp</span><br />
             Requests submitted beyond this deadline will be considered but cannot be guaranteed due to procurement and finance constraints.<br /><br />
             Thank you for your cooperation!<br />
             <span className="signature">– Logistics Team</span>
