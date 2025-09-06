@@ -22,11 +22,15 @@ if [ -f "/var/www/html/index.html" ]; then
     head -5 /var/www/html/index.html
 fi
 
-echo -e "\n${YELLOW}🏗️ Building React application...${NC}"
+echo -e "\n${YELLOW}🏗️ Building React application with CSS fixes...${NC}"
 cd /var/www/tik-workshop/frontend || {
     echo -e "${RED}❌ Project directory not found${NC}"
     exit 1
 }
+
+# Pull latest changes with CSS fixes
+echo -e "${YELLOW}📥 Pulling latest changes from repository...${NC}"
+git pull origin main
 
 # Install dependencies and build
 npm install

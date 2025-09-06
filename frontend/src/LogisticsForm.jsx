@@ -157,16 +157,16 @@ function LogisticsForm() {
   };
 
   return (
-    <div className="app-bg">
-      <div className="form-container">
-        <div className="form-header">
+    <div className="form-bg">
+      <div className="logistics-form">
+        <div className="workshop-info">
           <h1>🎯 TikTok Learning Sharing Workshop</h1>
           <p>Logistics Request System</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="logistics-form">
+        <form onSubmit={handleSubmit} className="form-content">
           {/* Basic Information */}
-          <div className="section">
+          <div className="basic-info">
             <h2>👤 Basic Information</h2>
             <div className="form-grid">
               <div className="form-group">
@@ -229,8 +229,8 @@ function LogisticsForm() {
           </div>
 
           {/* Items Section */}
-          <div className="section">
-            <div className="section-header">
+          <div className="items-section">
+            <div className="add-item-section">
               <h2>📦 Logistics Items Request</h2>
               <button
                 type="button"
@@ -348,12 +348,12 @@ function LogisticsForm() {
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <h3>📋 Request Status</h3>
-                <button className="modal-close" onClick={() => setShowModal(false)}>
+                <button className="modal-close-btn" onClick={() => setShowModal(false)}>
                   ✖️
                 </button>
               </div>
               <div className="modal-body">
-                <p>{modalMessage}</p>
+                <p className="modal-message">{modalMessage}</p>
               </div>
               <div className="modal-footer">
                 <button className="modal-btn" onClick={() => setShowModal(false)}>
